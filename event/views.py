@@ -288,105 +288,11 @@ def home(request):
         print(sent_action)
 
 
-        if sent_action == 'answer':
-            right_answer=user.userprofile.question.answer1_swedish
-            ############################
-            # Correct answer
-            ############################
-            if right_answer == sent_answer:
-
-                # increment right answers
-                user.userprofile.correct_answers+=1
-
-                # delete from starting square
-                startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
-                startsquare.occupants3.remove(user.userprofile)
-                startsquare.save()
-
-                # add userprofile to end square
-                endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
-                endsquare.occupants3.add(user.userprofile)
-                endsquare.save()
-                
-                # get moved direction
-                movedx,movedy=getmovedir(user.userprofile.xpos,user.userprofile.ypos,user.userprofile.pending_xpos,user.userprofile.pending_ypos)
-
-                # set new userprofile coordinates
-  
-
-                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
-                
-                #set question to correct
-                question = Question.objects.filter(name='Correct_1').order_by('?').first()
-                user.userprofile.question=question
-                user.userprofile.save()
-                # there shouldnt be any answers
-
-                answers = []
-                overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':currentdir,'currentdir_listing':currendir_listing})
-            print("sent_command commitdirectory")
-            sent_path = request.POST.get('answer')
-            print (sent_path)
-            if os.path.isdir(sent_path):
-                print(f"{sent_path} is a directory!")
-                user.userprofile.current_genome_dir=sent_path
-                currendir_listing = os.listdir(sent_path)
-                user.userprofile.save()
-            
-                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
-
-                question = Question.objects.filter(name='Wrong_1').order_by('?').first()
-                user.userprofile.question=question
-                user.userprofile.save()
-                answers = []
-                overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
-            
-
-
-
-            # end of right answer
-            else: #wrong answer
-                print('wrog')
-                user.userprofile.wrong_answers+=1
-                user.userprofile.save()
-                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
-
-                question = Question.objects.filter(name='Wrong_1').order_by('?').first()
-                user.userprofile.question=question
-                user.userprofile.save()
-                answers = []
-                overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
-
-            # end of wrong answer
-        # end of command: answer
-
+       
 
        
 
-        if sent_action == 'addgenomes':
-            print("sent_command addgenomes")
-            sent_answer = request.POST.get('answer').split(",")
-            
-            for i in sent_answer:
-                print(i)
-                existing_entry = genomeEntry.objects.filter(name=i).first()
-                
-
-                if not existing_entry:
-                    cleanedname=i.split(".")[0]
-                    if os.path.isdir(user.userprofile.current_genome_dir+"/"+i):
-                        dirinput="1"
-                    else:
-                        dirinput="0"
-
-
-
-                   
-
-
+        
 
         if sent_action == 'analyzefile':
             print("sent_command analyzefile")
@@ -513,14 +419,14 @@ def home(request):
                 currendir_listing = os.listdir(sent_path)
                 user.userprofile.save()
             
-                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+                dbsquares=getDatabaseAndView()
 
                 question = Question.objects.filter(name='Wrong_1').order_by('?').first()
                 user.userprofile.question=question
                 user.userprofile.save()
                 answers = []
                 overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+                return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
             
 
@@ -540,7 +446,7 @@ def home(request):
 
 
         # Send ranges,database,question and randomly ordered answers
-        myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+        dbsquares=getDatabaseAndView()
         overlays=getLabels(user,dbsquares,30)
         sent_path=user.userprofile.current_genome_dir
         #return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})

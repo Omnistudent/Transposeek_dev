@@ -244,26 +244,16 @@
     </div> <!--End contentlarge-->
     
 
-    <!--Questions window-->
+    <!--Questions window, neccessary for buttons to work-->
 
 
     <div class="content-question_answer">
     
-      <ul id="selectedFiles"></ul>
-      <input type="hidden" id="selectedFilesInput" name="selected_files" value="">
-  
-      <button onclick="thing3()">Add Selected Files2</button>
-      <br>
-  <input type="text" id="path-input" name="path" placeholder="Enter path...">
   <form method="post" id="question-form" action="">
     {% csrf_token %}
-    <button onclick="thing2()">commit_directory</button>
-  </form>
-   
-    
 
- 
- 
+  </form>
+
      </div>
 
    
@@ -272,9 +262,6 @@
       <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     </div>
 <script>
-
-
-
 
 
     // Initialize DataTables
@@ -311,33 +298,7 @@ buttons.forEach(function(button) {
 
 
 
-  function updatePage(x, y) {
 
-    var user = '{{ user.userprofile.question.area1 }}';
-    if (user == "utility") {
-
-      var input_x = document.createElement('input');
-      input_x.type = 'hidden';
-      input_x.name = 'sent_x';
-      input_x.value = x;
-
-      var input_y = document.createElement('input');
-      input_y.type = 'hidden';
-      input_y.name = 'sent_y';
-      input_y.value = y;
-
-      var input_action = document.createElement('input');
-      input_action.type = 'hidden';
-      input_action.name = 'sent_action';
-      input_action.value = 'answer';
-
-      var form = document.getElementById('mapform');
-      form.appendChild(input_x);
-      form.appendChild(input_y);
-      form.appendChild(input_action);
-      form.submit();
-    }
-}
 
 function receiveAnswer(command, answer,unused) {
   const selectedFilesList = document.getElementById('selectedFiles');

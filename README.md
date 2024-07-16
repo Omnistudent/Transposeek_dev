@@ -33,8 +33,14 @@ Click the "Home" tab.
 For each genome, click the buttons from left to right. Wait for each process to finish (the web window stops loading).
 Processes that have been run and have a recognizable result file are colored green, while processes that are marked red have not been run yet.
 
-Requirements
+Requirements:
 python
+biopython
+matplotlib.pyplot
+PIL
+
+admin to database is theo/1234
+the adress to administrate the database is http://127.0.0.1:8000/admin/
 
 The program is under development, much unused code remains to be deleted.
 
