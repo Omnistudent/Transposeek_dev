@@ -1,0 +1,271 @@
+ {% extends 'event/base.html' %}
+{% load static %}
+
+{%block content%}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<title>Your Layout</title>
+<style>
+    .container2 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 20px;
+        background-color: rgb(240, 229, 198);
+        padding: 40px;
+
+
+
+
+
+    }
+
+    .box2 {
+        border: 1px solid black;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer {
+        text-align: center;
+        border: 1px solid black;
+        padding: 20px;
+        margin: 20px;
+        background-color: rgb(240, 229, 198);
+    }
+
+    .header {
+  
+  grid-column-start: 1;
+  grid-column-end: 4;
+  outline: 2px;
+  border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
+}
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+    <div class="header">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+    
+    <div class="container2">
+        <div class="box2">
+        <p>Genomes in database</p>
+            <table id="example" class="table table-striped" style="width:100%">
+
+        
+                <thead>
+                    <tr>
+                      <th>x</th>
+                        <th>Name</th>
+                        <th>Is Dir</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                
+                  {% for item in squaredb %}
+                  <tr>
+                    <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
+                    <td> {{item.name}}</td>
+                    <td> {{item.is_dir}}</td>
+
+                
+                  </tr>
+        
+                {% endfor %}
+                
+                    
+                </tfoot>
+            </table>
+            <div class="buttons">
+                <button type="button" onclick="deleteGenome()">delete from database</button>
+                <button>button</button>
+            </div>
+        </div>
+    
+        <div class="box2">
+            <p>Genomes in directory</p>
+            <form method="post" id="question-form" action="" style="display: flex; align-items: center;">
+                {% csrf_token %}
+                <input type="text" id="path-input" name="path" placeholder="Enter path..." style="display: inline-block; margin-right: 10px;">
+                <button type="button" onclick="commitDirectory()" style="display: inline-block;">set directory</button>
+            </form>
+            <p></p>
+
+            
+            <table id="example" class="table table-striped" style="width:100%">
+
+                <thead>
+                    <tr>
+                      <th></th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                
+                  {% for item in currentdir_listing %}
+                  <tr>
+                    <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
+                    <td> {{item}}</td>
+
+
+        
+        
+                  </tr>
+        
+                {% endfor %}
+                
+                    
+                </tfoot>
+            </table>
+            
+    </form>
+            <div class="buttons">
+                <button type="button" onclick="addGenomes()">add to database</button>
+                <button>button</button>
+            </div>
+        </div>
+    
+        <div class="box2">
+            <p>table</p>
+            <div class="buttons">
+                <button>button</button>
+                <button>button</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Text</p> 
+    </div>
+    
+    </body>
+</html>
+
+
+<script>
+
+function addGenomes() {
+  
+
+  const selectedFilesList = getCheckedItems()
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'addgenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function commitDirectory() {
+  var pathValue = document.getElementById("path-input").value;
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'commitDirectory';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = pathValue;
+
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function getCheckedItems() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#example input[type='checkbox']");
+    
+    var checkedItems = [];
+
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
+
+
+
+
+
+function deleteGenome() {
+  
+
+  const selectedFilesList = getCheckedItems()
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'deletegenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+
+  </script>
+
+
+{%endblock%}

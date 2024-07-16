@@ -1,0 +1,606 @@
+{% extends 'event/base.html' %}
+{% load static %}
+{% load my_tags %}
+
+{%block content%}
+
+
+<!DOCTYPE html>
+<html>
+
+
+
+  <head>
+    <title>Main Screen</title>
+    <style>
+
+
+.button-container {
+
+                width: 300px;
+                height: 150px;
+
+                justify-content: center;
+                border: 1px solid #000000;
+                background-color: rgb(239, 236, 226);
+                overflow: auto;
+            
+    }
+
+.button-container button {
+      font-family: "IM Fell DW Pica","EB Garamond", serif;
+        width: 200px;
+        height: 50px;
+        margin: 10px;
+        font-size: 15px;
+        color: black;
+        background-color: rgb(240, 229, 198);
+        border: 1px solid #000000;
+        font-weight: bold;
+    }
+
+    .container button:hover {
+  background-color: rgb(241, 216, 151); /* set the background color to red when hovering over the button */
+  color: black;
+  border: 1px solid #000000;
+  cursor: pointer; /* change the cursor to a pointer when hovering over the button */
+}
+
+.answer-button {
+  width: 100px; /* adjust as needed */
+  font-size: 15px; /* default font size */
+}
+.container {
+  width: 100vw;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
+  display: grid;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  outline: none;
+  
+  
+  
+}
+
+.container div {
+  padding: 5px;
+  margin: 1px;
+  z-index: 1;
+}
+
+
+
+.header {
+  
+  grid-column-start: 1;
+  grid-column-end: 4;
+  outline: 2px;
+  border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
+}
+
+.myButton2 {
+            padding: 10px;
+            background-color: #f0f0f0;
+}
+
+.content-large {
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  grid-column-start: 1;
+  height: 800px;
+  
+  width: 1200px;
+
+  outline: 1px;
+  border: 1px solid #000000;
+  
+  background-color: rgb(240, 229, 198);
+  align-items: center;
+  overflow: auto;
+}
+
+
+
+.content-question_answer {
+  width: 100px;
+  height: 100px;
+  font-family: "IM Fell DW Pica","EB Garamond", serif;
+  border: 1px solid #000000;
+  padding: 5px;
+  margin: 0px;
+  z-index: 1;
+  background-color: rgb(237, 215, 156);
+}
+
+.footer {
+  grid-column-start: 1;
+  grid-column-end: span 3;
+  grid-row-start: 3;
+
+  border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
+
+}
+
+
+
+
+
+.hover-effect:hover {
+  opacity: 0.5;
+  /* Add any other styles you want to apply to the image when it's being hovered over */
+  /* used for single pictures, pictures are now css objects*/
+}
+
+.list-container {
+            height: 300px; /* Adjust the height as needed */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: row;
+            max-height: 400px; /* Adjust the maximum height as needed */
+
+        }
+
+
+     
+    /* Add some basic styles for scrollable table */
+    .dataTable {
+    font-size: 0.6em;  /* Adjust this value as you see fit */
+}
+
+
+</style>
+  </head>
+  <body>
+    <div class="container">
+     <div class="header">
+          <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+            <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+            <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+            <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          User: {{user.userprofile}}
+
+        
+
+
+     </div>
+     
+     <div class="content-large">
+
+      <table id="example" class="table table-striped" style="width:100%">
+        
+
+        
+        <thead>
+            <tr>
+              <th>x</th>
+                <th>Name</th>
+                <th>Is Dir</th>
+                <th>Genome Directory</th>
+                <th>Contigs</th>
+                <th>Genome Size</th>
+                <th>IS footprint</th>
+                <th>Analyze</th>
+                <th>Prepare</th>
+                <th>Blast</th>
+                <th> Analyse Blast</th>
+                <th> Make footprints</th>
+                <th> Analyse results</th>
+                <th> Completeness freq</th>
+            </tr>
+            
+        </thead>
+        <tbody>
+        
+          {% for item in squaredb %}
+          <tr>
+            <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
+            <td> {{item.name}}</td>
+            <td> {{item.is_dir}}</td>
+            <td> {{item.path}}</td>
+            <td> {{item.contigs_num}}</td>            
+            <td> {{item.genome_size}}</td>
+            <td> {{item.footprint_size}}</td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_isok }}" onclick="receiveAnswer2('{{ item.name }}')">Analyse</button></td>
+            
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_prepare_isok }}" onclick="prepare('{{ item.name }}')">Prepare</button></td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_blast_isok }}" onclick="blast('{{ item.name }}')">Blast</button></td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_blastanal_isok }}" onclick="analyse_blast('{{ item.name }}')">Analyse Blast</button></td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_footprints_isok }}" onclick="make_foot('{{ item.name }}')">Make Foot</button></td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_results_isok }}" onclick="analyse_results('{{ item.name }}')">Analyse results</button></td>
+            <td>
+              {% if item.is_frequency_pic %}
+                  <img src="{{ STATIC_URL }}event/images/{{ item.is_frequency_pic}}" alt="Image 2">
+
+                  
+              {% else %}
+                  <img src="{{ STATIC_URL }}event/images/blank.png" alt="Default Image">
+              {% endif %}
+
+          </td>
+
+
+          </tr>
+
+        {% endfor %}
+        
+            
+        </tfoot>
+    </table>
+
+ 
+
+    </div> <!--End contentlarge-->
+    
+
+    <!--Questions window-->
+
+
+    <div class="content-question_answer">
+    
+      <ul id="selectedFiles"></ul>
+      <input type="hidden" id="selectedFilesInput" name="selected_files" value="">
+  
+      <button onclick="thing3()">Add Selected Files2</button>
+      <br>
+  <input type="text" id="path-input" name="path" placeholder="Enter path...">
+  <form method="post" id="question-form" action="">
+    {% csrf_token %}
+    <button onclick="thing2()">commit_directory</button>
+  </form>
+   
+    
+
+ 
+ 
+     </div>
+
+   
+   <div class="footer">        
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    </div>
+<script>
+
+
+
+
+
+    // Initialize DataTables
+    $(document).ready(function() {
+        $('#example').DataTable({searching: false, paging: false});
+    });
+    
+var buttons = document.querySelectorAll('.answer-button');
+
+
+
+// Find the smallest text length
+var smallestLength = Infinity;
+buttons.forEach(function(button) {
+  var textLength = button.textContent.length;
+  if (textLength < smallestLength) {
+    smallestLength = textLength;
+  }
+});
+
+// Set the font size for all buttons based on the smallest text length
+var fontSize = 17; // default font size
+if (smallestLength > 30) {
+  fontSize = 14;
+}
+if (smallestLength > 35) {
+  fontSize = 9;
+}
+buttons.forEach(function(button) {
+  button.style.fontSize = fontSize + 'px';
+});
+
+
+
+
+
+  function updatePage(x, y) {
+
+    var user = '{{ user.userprofile.question.area1 }}';
+    if (user == "utility") {
+
+      var input_x = document.createElement('input');
+      input_x.type = 'hidden';
+      input_x.name = 'sent_x';
+      input_x.value = x;
+
+      var input_y = document.createElement('input');
+      input_y.type = 'hidden';
+      input_y.name = 'sent_y';
+      input_y.value = y;
+
+      var input_action = document.createElement('input');
+      input_action.type = 'hidden';
+      input_action.name = 'sent_action';
+      input_action.value = 'answer';
+
+      var form = document.getElementById('mapform');
+      form.appendChild(input_x);
+      form.appendChild(input_y);
+      form.appendChild(input_action);
+      form.submit();
+    }
+}
+
+function receiveAnswer(command, answer,unused) {
+  const selectedFilesList = document.getElementById('selectedFiles');
+        const selectedFileNames = [];
+
+        for (let i = 0; i < selectedFilesList.children.length; i++) {
+            const selectedFile = selectedFilesList.children[i].textContent;
+            selectedFileNames.push(selectedFile);
+        }
+
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'addgenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFileNames;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+
+function receiveAnswer2(genomename) {
+
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'analyzefile';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = genomename;
+
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+
+
+function analyse_results(genomename) {
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'analyse_results';
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = genomename;
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+form.appendChild(answer_input);
+form.submit();
+}
+
+function prepare(genomename) {
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'prepare';
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = genomename;
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+form.appendChild(answer_input);
+form.submit();
+}
+
+
+function blast(genomename) {
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'blast';
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = genomename;
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+form.appendChild(answer_input);
+form.submit();
+}
+
+
+
+function analyse_blast(genomename) {
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'analyseblast';
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = genomename;
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+form.appendChild(answer_input);
+form.submit();
+}
+
+function make_foot(genomename) {
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'make_footprint';
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = genomename;
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+form.appendChild(answer_input);
+form.submit();
+}
+
+
+function thing2(command, answer,unused) {
+  var pathValue = document.getElementById("path-input").value;
+
+  const selectedFilesList = document.getElementById('selectedFiles');
+        const selectedFileNames = [];
+
+        for (let i = 0; i < selectedFilesList.children.length; i++) {
+            const selectedFile = selectedFilesList.children[i].textContent;
+            selectedFileNames.push(selectedFile);
+        }
+
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'commitDirectory';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = pathValue;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function thing3() {
+  
+
+  const selectedFilesList = getCheckedItems()
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'addgenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+
+
+
+
+
+
+
+
+function addSelectedFiles() {
+        const selectedFilesList = document.getElementById('selectedFiles');
+        const selectedFileNames = [];
+
+
+        for (let i = 0; i < selectedFilesList.children.length; i++) {
+            const selectedFile = selectedFilesList.children[i].textContent;
+            selectedFileNames.push(selectedFile);
+        }
+
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '{% url "home" %}';
+        form.style.display = 'none';
+
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+
+        form.appendChild(csrfToken);
+
+        for (let i = 0; i < selectedFileNames.length; i++) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_files';
+            input.value = selectedFileNames[i];
+            form.appendChild(input);
+        }
+
+        var command_input = document.createElement('input2');
+        command_input.type = 'hidden';
+        command_input.name = 'command';
+        command_input.value = 'addgenomes';
+        form.appendChild(input2);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+
+    function getCheckedItems() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#itemsTable input[type='checkbox']");
+    
+    var checkedItems = [];
+
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
+
+  </script>
+
+
+{%endblock%}

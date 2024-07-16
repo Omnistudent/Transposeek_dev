@@ -1,0 +1,238 @@
+{% extends 'event/base.html' %}
+{% load static %}
+
+{%block content%}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Karta</title>
+    <style>
+
+.button-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .button-container button {
+        width: 200px;
+        height: 70px;
+        margin: 10px;
+        font-size: 20px;
+    }
+.x {
+  
+  
+  background-color: lightblue;
+  z-index: 1;
+
+
+}
+
+.transparent-image {
+  position: relative;
+  top: -300;
+  left: 0;
+
+  z-index: 1;
+}
+
+
+      .square {
+        width: {{ square_size }}px;
+        height: {{ square_size }}px;
+        display: inline-block;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
+
+      .square:hover {
+        border: 1px solid blue;
+}
+      .panel {
+        width: 400px;
+        height: 50%;
+        position: fixed;
+        top: 200px;
+        right: 0px;
+        background-color: white;
+        border-left: 1px solid rgb(0, 0, 0);
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      .panel-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .panel-content {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    
+    Karta <br>
+    <div class="card" style="width: 20rem;">
+
+    <form id="click-form" method="post" action="" >
+      {% csrf_token %}
+      {% for row_num in myrange_y %}
+      
+        <div class="row">
+        {% for col_num in myrange_x %}
+          {% with index=row_num|add:'-'|add:col_num %}
+            <!-- Row is y, col is x-->
+            <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+              {% for square2 in dbsquares %}
+                {% if square2.x == row_num|stringformat:"s" and square2.y == col_num|stringformat:"s" %}                  
+                  <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+                  {% if user.userprofile in square2.occupants3.all %}
+                    <!--<img src="event/image_ship.png">-->
+                    <img src="{{ STATIC_URL }}event/images/image_ship.png">
+                  {% else %}
+                    <!--<img src="{{square2.image}}">-->
+                    
+                    {% if row_num|stringformat:"s" == '4' and col_num|stringformat:"s" == '4' %}
+                    <div class="x">Vardagshavet</div>
+                    {% endif %}
+                    <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
+
+                    
+                  {% endif %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endwith %}      
+        {% endfor %}
+        </div>  
+    {% endfor %}
+  </div>
+
+    
+    
+  </form>
+
+    <div class="panel">
+      <div class="panel-title">Info:</div>
+      Kapten:{{user.userprofile}}
+      <br>
+        position x: {{user.userprofile.xpos}}<br>
+        position y: {{user.userprofile.ypos}}<br>
+        pending position x: {{user.userprofile.pending_xpos}}<br>
+        position y: {{user.userprofile.pending_ypos}}<br>
+        rätta svar:{{user.userprofile.correct_answers}}<br>
+        felaktiga svar:{{user.userprofile.wrong_answers}}<br>
+      <br>
+      view<br>
+      x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
+
+      
+    </div>
+
+    <div id="side-panel" class="button-container">
+      <div class="button-container">
+      <form method="post" id="question-form" >
+        {% csrf_token %}
+        {{question.question_swedish}}
+        <br>
+        {% if question.area3 != "no_questions" %}
+        {% for answer in answers %}
+        
+            
+            <button class="btn btn-primary" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
+
+            {% if forloop.counter|divisibleby:2 %}
+                <br>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+
+    </form>
+  </div>
+    </div>
+
+
+  
+
+    <script>
+
+function updatePanel(row, col, dropdownValue) {
+
+    var user = '{{ user.userprofile.question.area1 }}';
+    if (user == "utility"){
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'square';
+    inputrow = row + '*' + col;
+    input.value = inputrow;
+
+   
+    
+    var dropdownInput = document.createElement('input');
+    dropdownInput.type = 'hidden';
+    dropdownInput.name = 'dropdown_value';
+    dropdownInput.value = dropdownValue;
+    //alert("Selected value: " + dropdownValue);
+    //console.log('Dropdown value:', document.getElementById('dropdown').value);
+    
+    var form = document.getElementById('click-form');
+    form.appendChild(input);
+    form.appendChild(dropdownInput);
+    form.submit();
+    }
+    
+  }
+
+  function receiveAnswer(row, col, dropdownValue) {
+  
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'square';
+  input.value = row + '*' + col;
+  
+  var dropdownInput = document.createElement('input');
+  dropdownInput.type = 'hidden';
+  dropdownInput.name = 'dropdown_value';
+  dropdownInput.value = dropdownValue;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(input);
+  form.appendChild(dropdownInput);
+  form.submit();
+  //alert("Selected value: " + input.value);
+}
+
+  function handleDropdownChange() {
+  var dropdown = document.getElementById("dropdown-menu");
+  var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+  var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'square';
+    input.value = "2" + '*' + "2";
+    
+    var dropdownInput = document.createElement('input');
+    dropdownInput.type = 'hidden';
+    dropdownInput.name = 'dropdown_value';
+    dropdownInput.value = dropdownValue;
+    
+    var form = document.getElementById('click-form');
+    form.appendChild(input);
+    form.appendChild(dropdownInput);
+    form.submit();
+}
+
+
+
+    </script>
+  </body>
+</html>
+
+{%endblock%}

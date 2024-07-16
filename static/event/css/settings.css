@@ -1,0 +1,76 @@
+body {
+    background-color: #333; /* This sets the background to dark gray */
+
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: rgb(240, 229, 198);
+}
+
+.settings-header {
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* This creates two columns */
+    gap: 20px;
+}
+
+.settings-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: rgb(240, 229, 198);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.submit-group {
+    grid-column: 1 / -1; /* This makes the submit button span both columns */
+}
+
+#commit-directory {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #97999c;
+    color: white;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#commit-directory:hover {
+    background-color: #646669;
+}
+
+
+
+
+/* Add any additional styling you need here */

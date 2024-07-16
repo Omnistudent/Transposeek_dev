@@ -1,0 +1,214 @@
+{% extends 'event/base.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block content %}
+<style>
+  .header {
+    
+    grid-column-start: 1;
+    grid-column-end: 4;
+    outline: 2px;
+    border: 1px solid #000000;
+    background-color: rgb(240, 229, 198);
+    }
+  </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Settings</title>
+    <link rel="stylesheet" href="{% static 'event/css/settings.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+  <div class="header">
+    <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+      <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+      <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+      <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    User: {{user.userprofile}}
+    
+  
+    
+  
+  
+  </div>
+    <div class="container">
+        <header class="settings-header">
+            User: {{ user.userprofile }}
+        </header>
+        
+        <div class="settings-column">
+            {% csrf_token %}
+            <!-- Repeat this structure for each setting -->
+            <div class="form-group">
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">    
+                <label for="blast_directory">Blast bin directory:</label>
+                <input type="text" id="blast_directory" name="blast_directory">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.blast_directory }} </div>
+                <button type="button" onclick="updateSetting('blast_directory')">Update blast_directory</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Location of the blast exectuable bin directory, for example c:/NCBI/blast-BLAST_VERSION+/bin/
+                </p>
+              </div>
+      
+              
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                
+                  <label for="work_files_dir">work_files_base_dir:</label>
+                <input type="text" id="work_files_dir" name="work_files_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.work_files_dir }} </div>
+                <button type="button" onclick="updateSetting('work_files_dir')">Update work_files_dir</button>
+
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Used to store concatenated fasta files made by the prepare step.
+                </p>
+              </div>
+
+
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="blast_files_dir">blast_files_dir:</label>
+                <input type="text" id="blast_files_dir" name="blast_files_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.blast_files_dir }} </div>
+                <button type="button" onclick="updateSetting('blast_files_dir')">Update blast_files_dir</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Used to store blast1results.xml files, the result of the first blastx against the concatenated genome.
+                </p>
+              </div>
+
+
+
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="blast_analysis_dir">blast_analysis_dir:</label>
+                <input type="text" id="blast_analysis_dir" name="blast_analysis_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.blast_analysis_dir }} </div>
+                <button type="button" onclick="updateSetting('blast_analysis_dir')">Update blast_analysis_dir</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Contains _blast1analysis.gb files, the result of the parsed blastx search of the concatenated genome.
+                </p>
+              </div>
+
+
+                <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="analysed_gb_files_dir">analysed_gb_files_dir:</label>
+                <input type="text" id="analysed_gb_files_dir" name="analysed_gb_files_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.analysed_gb_files_dir }} </div>
+                <button type="button" onclick="updateSetting('analysed_gb_files_dir')">Update analysed_gb_files_dir</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Contains _curated.gb files, curated genbank files with IS information.
+                </p>
+              </div>
+
+
+                <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="is_list_csv_file_dir">is_list_csv_file_dir:</label>
+                <input type="text" id="is_list_csv_file_dir" name="is_list_csv_file_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.is_list_csv_file_dir }} </div>
+                <button type="button" onclick="updateSetting('is_list_csv_file_dir')">Update is_list_csv_file_dir</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Used to store information about is hits in csv format.
+                </p>
+              </div>
+
+                <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="first_e_cutoff">first_e_cutoff:</label>
+                <input type="text" id="first_e_cutoff" name="first_e_cutoff">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.first_e_cutoff }} </div>
+                <button type="button" onclick="updateSetting('first_e_cutoff')">Update first_e_cutoff</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  expect cutoff for first, concatenated genome, blastx.
+                </p>
+              </div>
+                <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="second_e_cutoff">second_e_cutoff:</label>
+                <input type="text" id="second_e_cutoff" name="second_e_cutoff">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.second_e_cutoff }} </div>
+                <button type="button" onclick="updateSetting('second_e_cutoff')">Update second_e_cutoff</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  expect cutoff for second blastx, used to identify IS.
+                </p>
+              </div>
+
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="transposase_protein_database">transposase_protein_database:</label>
+                <input type="text" id="transposase_protein_database" name="transposase_protein_database">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.transposase_protein_database }} </div>
+                <button type="button" onclick="updateSetting('transposase_protein_database')">Update transposase_protein_database</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Formatted protein database containing transposases.
+                </p>
+              </div>
+
+              <div style="border: 1px solid #ccc; padding: 10px; border-radius: 4px;margin-bottom: 10px;">  
+                <label for="is_frequency_pic_dir">is_frequency_pic_dir:</label>
+                <input type="text" id="is_frequency_pic_dir" name="is_frequency_pic_dir">
+                <div style="padding-right: 20px;">Current setting: {{ user.userprofile.is_frequency_pic_dir }} </div>
+                <button type="button" onclick="updateSetting('is_frequency_pic_dir')">Update is_frequency_pic_dir</button>
+                <p style="font-size: small; word-wrap: break-word; margin-top: 10px;">
+                  Storage for images generated during runtime. Needs to be in /static/event/images/ due to html rules.
+                </p>
+              </div>
+
+            </div>
+
+            
+            <!-- ...additional settings... -->
+        </div>
+    </div>
+    <script>
+
+
+      function updateSetting(settingName) {
+          // Assume the value is in an input field with id corresponding to the setting name
+          var settingValue = document.getElementById(settingName).value;
+  
+          // Create form if it doesn't exist
+          var form = document.getElementById('settings-form');
+          if (!form) {
+              form = document.createElement('form');
+              form.id = 'settings-form';
+              form.method = 'POST';
+              form.action = ''; // Your endpoint here
+              document.body.appendChild(form);
+          }
+  
+          // Clear previous inputs
+          while (form.firstChild) {
+              form.removeChild(form.firstChild);
+          }
+  
+          // CSRF token
+          var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          var csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = csrfToken;
+          form.appendChild(csrfInput);
+  
+          // Command input
+          var commandInput = document.createElement('input');
+          commandInput.type = 'hidden';
+          commandInput.name = 'command';
+          commandInput.value = 'update';
+          form.appendChild(commandInput);
+  
+          // Answer input (which is the actual value for the setting)
+          var answerInput = document.createElement('input');
+          answerInput.type = 'hidden';
+          answerInput.name = settingName;
+          answerInput.value = settingValue;
+          form.appendChild(answerInput);
+  
+          // Submit the form
+          form.submit();
+      }
+  </script>
+  
+</body>
+</html>
+{% endblock %}

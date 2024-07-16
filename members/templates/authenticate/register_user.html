@@ -1,0 +1,47 @@
+{% extends 'event/base.html' %}
+
+{% block content %}
+<style>
+.header {
+  
+	grid-column-start: 1;
+	grid-column-end: 4;
+	outline: 2px;
+	border: 1px solid #000000;
+	background-color: rgb(240, 229, 198);
+  }
+</style>
+{% if form.errors %}
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            There was an error with your form...
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+{% endif %}	
+
+<div class="header">
+	<a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	<a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	<a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+	  <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+	  <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+	  <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	  <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	User: {{user.userprofile}}
+	
+
+  
+
+
+</div>
+	<h1>Register</h1>
+<br/>
+
+<form action="{% url 'register_user' %}" method=POST>
+			{% csrf_token %}  
+      		{{ form.as_p }}
+			<input type="submit" value="Submit" class="btn btn-secondary">
+		</form>
+
+<br/><br/>	
+
+{% endblock %}

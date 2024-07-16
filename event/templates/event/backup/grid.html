@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clickable Squares</title>
+    <style>
+      .square {
+        width: {{ square_size }}px;
+        height: {{ square_size }}px;
+        display: inline-block;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
+      .panel {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        background-color: white;
+        border-left: 1px solid black;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      .panel-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .panel-content {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <form id="click-form" method="post" action="/grid">
+      {% csrf_token %}
+    {% for square2 in squares %}
+      {% with id=forloop.counter0 %}
+        <div class="square" onclick="updatePanel({{ id }})">
+        <input type="hidden" name="x" value="{{id}}">
+        <img id="square{{ id }}" src={{square2}} width="30" height="30">
+       
+        </div>
+      {% endwith %}
+      {% if forloop.counter|divisibleby:20 %} 
+        <br>
+      {% endif %}
+    {% endfor %}
+
+    {% for row in myrange %}
+    {% for column in myrange %}
+
+    {% endfor %}
+    {% endfor %}
+    </form>
+
+
+    <div class="panel">
+      <div class="panel-title">Clicked Square</div>
+      <div class="panel-content" id="clicked-square">None</div>
+    </div>
+
+    <script>
+      function updatePanel(id) {
+        var clickedSquare = document.getElementById('clicked-square');
+        clickedSquare.innerHTML = id;
+        var squareImg = document.getElementById('square' + id);
+        squareImg.src = '/event/image_ship.png';
+        document.getElementById('click-form').submit();
+       //var xhr = new XMLHttpRequest();
+         //  xhr.open("POST", "/grid");
+         // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+         //  xhr.send("x=" + x);
+      }
+
+
+    </script>
+  </body>
+</html>
