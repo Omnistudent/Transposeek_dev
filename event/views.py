@@ -205,10 +205,6 @@ def home(request):
 
 
 
-
-
-        #dbp=os.path.join(BASE_DIR2, dbp1)
-        print("here111")
         dbp=BASE_DIR2+dbp1
         blastplace=BASE_DIR2+blastplacestatic+"/"
         resultplace=BASE_DIR2+resultsplacestatic
@@ -312,7 +308,7 @@ def home(request):
             overlays=getLabels(user,dbsquares,30)
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
 
 
@@ -336,7 +332,7 @@ def home(request):
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
 
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
 
         if sent_action == 'blast':
@@ -353,7 +349,7 @@ def home(request):
             overlays=getLabels(user,dbsquares,30)
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
         if sent_action == 'analyseblast':
             print("sent_command analyse blast")
@@ -369,7 +365,7 @@ def home(request):
             overlays=getLabels(user,dbsquares,30)
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
       
         if sent_action == 'make_footprint':
             print("sent_command make_footprint")
@@ -385,7 +381,7 @@ def home(request):
             overlays=getLabels(user,dbsquares,30)
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
 
         if sent_action == 'analyse_results':
@@ -403,30 +399,11 @@ def home(request):
             sent_path=user.userprofile.current_genome_dir
             
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
 
 
 
-
-        if sent_action == 'commitDirectory':
-            print("sent_command commitdirectory")
-            sent_path = request.POST.get('answer')
-            print (sent_path)
-            if os.path.isdir(sent_path):
-                print(f"{sent_path} is a directory!")
-                user.userprofile.current_genome_dir=sent_path
-                currendir_listing = os.listdir(sent_path)
-                user.userprofile.save()
-            
-                dbsquares=getDatabaseAndView()
-
-                question = Question.objects.filter(name='Wrong_1').order_by('?').first()
-                user.userprofile.question=question
-                user.userprofile.save()
-                answers = []
-                overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
             
 
@@ -450,7 +427,7 @@ def home(request):
         overlays=getLabels(user,dbsquares,30)
         sent_path=user.userprofile.current_genome_dir
         #return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
-        return render(request,'event/home.html',{'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+        return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
         #return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
     # end of if request was post
 
@@ -1122,10 +1099,7 @@ def find_starts_ends(querylist):
     return results
 
 
-def getmovedir(xstart,ystart,xend,yend):
-    dx=int(int(xend)-int(xstart))
-    dy=int(yend-ystart)
-    return (dx,dy)
+
 
 def delete_inactive_temp_users():
     threshold = timezone.now() - timedelta(minutes=10)
@@ -1142,20 +1116,7 @@ def getDatabaseAndView():
 
 
 
-def getDatabaseAndView3(userx,usery,gridx,gridy):
-    myrange_x=range(userx,int(userx)+gridx)
-    myrange_y=range(usery,int(usery)+gridy)
 
-    startx = int(userx)
-    stopx = int(userx)+gridx
-    starty = int(usery)
-    stopy = int(usery)+gridy
-
-    charsx = [str(i) for i in range(startx, stopx)]
-    charsy = [str(i) for i in range(starty, stopy)]
-    dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-
-    return (myrange_x,myrange_y,dbsquares)
 
 def getLabels(user,gottendata,squaresize):
 
