@@ -1,0 +1,36 @@
+{% extends 'event/base.html' %}
+
+{%block content%}
+
+
+
+<center>
+<h1>Event List</h1>
+
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+      Column
+    </div>
+    <div class="col">
+      Column
+    </div>
+    <div class="col">
+      Column
+    </div>
+  </div>
+</div>
+
+<div class="btn-group" role="group" aria-label="Basic mixed styles example">
+  <button type="button" class="btn btn-danger">Left</button>
+  <button type="button" class="btn btn-warning">Middle</button>
+  <button type="button" class="btn btn-success">Right</button>
+</div>
+	<ul>
+	
+	
+{% for event in event_list%}
+	<li>{{event}}</li>
+{%endfor%}
+	</ul>
+{%endblock%}
