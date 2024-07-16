@@ -10,6 +10,9 @@ git clone https://github.com/Omnistudent/transposeek2
 
 Running the program
 
+go to the folder transposeek2 in the command line window,
+cd transposeek2
+
 In the cloned folder, type
 python manage.py runserver
 
@@ -29,4 +32,10 @@ On the tab "Manage genomes", add genome files from the current folder (middle wi
 Click the "Home" tab.
 For each genome, click the buttons from left to right. Wait for each process to finish (the web window stops loading).
 Processes that have been run and have a recognizable result file are colored green, while processes that are marked red have not been run yet.
+
+Requirements
+python
+
+The program is under development, much unused code remains to be deleted.
+
 
