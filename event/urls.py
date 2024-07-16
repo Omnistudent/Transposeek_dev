@@ -5,7 +5,6 @@ urlpatterns = [
     #path('<int:year>/<str:month>',views.home,name="home"),
     #path('events',views.all_events,name="list-events"),
     path('help',views.help,name="help"),
-    path('editmap',views.editmap,name="editmap"),
     path('managegenomes',views.managegenomes,name="managegenomes"),
     path('editSettings',views.editSettings,name="editSettings"),
     #path('grid',views.grid,name="grid"),
