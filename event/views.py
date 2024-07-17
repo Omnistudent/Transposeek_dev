@@ -154,7 +154,6 @@ def editSettings(request):
                 print(f"Received setting: {key} with value: {value}")
                 if hasattr(request.user.userprofile, key):
                     setattr(request.user.userprofile, key, value)
-                    print("it had attrirböeöölldd")
                     request.user.userprofile.save()
                
 
@@ -244,23 +243,16 @@ def home(request):
 
 
 
-
+        # Get the genome size and the number of contigs
         if sent_action == 'analyzefile':
-            print("sent_command analyzefile")
             sent_answer = request.POST.get('answer')
-         
-            genObj = genomeEntry.objects.filter(name=sent_answer).first()
-           
+            genObj = genomeEntry.objects.filter(name=sent_answer).first()           
             genomeFullPath=genObj.path+"/"+genObj.name
             contigs=getGenomeInfo(genomeFullPath)
-            print(contigs[0])
-            print(contigs[1])
             genObj.contigs_num=int(contigs[0])
             genObj.genome_size=int(contigs[1])
             genObj.save()
-
             dbsquares=getDatabaseAndView()
-            
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
             return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
@@ -268,24 +260,16 @@ def home(request):
 
 
         if sent_action == 'prepare':
-            print("sent_command prepare")
             sent_answer = request.POST.get('answer')
-         
             genObj = genomeEntry.objects.filter(name=sent_answer).first()
-           
             genomeFullPath=genObj.path+"/"+genObj.name
             contigs=prepareGenomeForBlast(genomeFullPath,genObj,sent_answer,user)
-            print(contigs[0])
-            print(contigs[1])
             genObj.contigs_num=contigs[0]
             genObj.genome_size=contigs[1]
             genObj.save()
-
             dbsquares=getDatabaseAndView()
-            
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-
             return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
 
 
@@ -589,6 +573,7 @@ def analyse_results(genObj,sent_answer,user):
     fho3.close()
     return()
 
+# Opens genome file in fasta or gb format, concatenates all record and writes a file _conc.fa to the workfiles directory
 def prepareGenomeForBlast(genomeFullPath,genObj,genomename,user):
     file_end=genomename.split(".")[-1]
     file_start=genomename.split(".")[0]
@@ -596,7 +581,6 @@ def prepareGenomeForBlast(genomeFullPath,genObj,genomename,user):
     genbank_endings= ["gbk", "gb","gbff"]
     fasta_endings= ["fa", "fasta","fna"]
     genomeFullPath_fh=open(genomeFullPath,"r")
-    full_file_start=genomename.split(".")[0]
     concatFastaFilename=file_start+"_conc.fa"
     my_work_files_dir=user.userprofile.work_files_dir+"/"+file_start
     print(my_work_files_dir)
@@ -613,7 +597,6 @@ def prepareGenomeForBlast(genomeFullPath,genObj,genomename,user):
         print("error")
     numcontigs=len(parsed_genbank)
     totalgenomesize=0
-    concatenated_sequence = sum(parsed_genbank, Seq(""))
     tempstring=""
     
     for record in parsed_genbank:
@@ -633,10 +616,8 @@ def prepareGenomeForBlast(genomeFullPath,genObj,genomename,user):
     genObj.concat_fasta_file=outputname
 
     genObj.save() 
-    
     output_fh=open(outputname,"w")
 
-    output_filename = outputname
     SeqIO.write(concatenated_record, output_fh, "fasta")
     output_fh.close()
     
@@ -704,9 +685,6 @@ def getseq(start,end,seq):
     return seq[start-1:end]
 
 def doblast(isseq,genObj,genomename,user):
-    #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    #print("dddddddddddddddd")
-    #print(BASE_DIR)
     file_start=genomename.split(".")[0]
     file_start=remove_extension(genomename)
     my_blast_files_dir=user.userprofile.blast_files_dir+"/"+file_start
@@ -720,7 +698,7 @@ def doblast(isseq,genObj,genomename,user):
     blastx_cline2 = NcbiblastxCommandline(query=genObj.concat_fasta_file, db=user.userprofile.transposase_protein_database, evalue=user.userprofile.first_e_cutoff, outfmt=5, out=resultsfilepath,max_target_seqs=10000,num_threads=4,query_gencode=11)
 
     blastline=user.userprofile.blast_directory+"blastx -db "+user.userprofile.transposase_protein_database+" -out "+resultsfilepath+" -query "+genObj.concat_fasta_file+" -query_gencode 11 -num_threads 4 -outfmt 5 -evalue "+ user.userprofile.first_e_cutoff
-    print("lll")
+
     print(user.userprofile.blast_directory+str(blastx_cline2))
     os.system(user.userprofile.blast_directory+str(blastx_cline2)) 
     return()
