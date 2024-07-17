@@ -7,9 +7,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Karta</title>
+    <title>Help</title>
     <style>
-body{ margin: 0}
+
 
 
 .container {
@@ -196,33 +196,18 @@ body{ margin: 0}
      </div>
      
      <div class="content-large">
-      Set the directory to the blast bin directory in Edit settings.
-      <br>
-      Example:c:/NCBI/blast-BLAST_VERSION+/bin/
-      <br>
+    Home tab:<br>
+    <br>
+    Your investigated genomes are shown here.<br>
+    <br>
+    Name: file name for the genome<br>
+    Nickname: not in use<br>
+    Genome directory: the location of the file<br>
+    Genome size: size of the genome in nt<br>
+    IS footprint: number of nt consisting of IS<br>
+    Analyse: size of the genome in nt<br>
+    Prepare: number of nt consisting of IS<br>
 
- 
-      <br>
-      Enter a directory with .gb files in "Manage genomes",under "Genomes in directory".
-      <br><br>
-      Push "set directory"
-      <br>
-      All other directories MUST be set in Edit Settings.
-
-      <br>
-      first_e_cutoff and second_e_cutoff do not need to be set, they default to 1e-6
-      <br>
-      The protein database must be an ncbi formatted protein database<br>
-      this consists of three files, example:<br>
-      is_aa_30_nov2016.fa.phr<br>
-      is_aa_30_nov2016.fa.pin<br>
-      is_aa_30_nov2016.fa.psq<br>
-      <br>
-      The path for these files would be entered as eg<br>
-      C:/autothink/is_aa_30_nov2016.fa<br>
-      "is_aa_30_nov2016.fa" was the name of the nr file fed into the ncbi script for making search databases<br>
-      A copy of these files are included in visualAutothink\visapp_proj\isdatabase<br>
-      <br>
       
     </div> <!--End contentlarge-->
     
@@ -230,7 +215,33 @@ body{ margin: 0}
     <!--Questions window-->
      <div class="content-question_answer">
       <center>
-
+        Set the directory to the blast bin directory in Edit settings.
+        <br>
+        Example:c:/NCBI/blast-BLAST_VERSION+/bin/
+        <br>
+  
+   
+        <br>
+        Enter a directory with .gb files in "Manage genomes",under "Genomes in directory".
+        <br><br>
+        Push "set directory"
+        <br>
+        All other directories MUST be set in Edit Settings.
+  
+        <br>
+        first_e_cutoff and second_e_cutoff do not need to be set, they default to 1e-6
+        <br>
+        The protein database must be an ncbi formatted protein database<br>
+        this consists of three files, example:<br>
+        is_aa_30_nov2016.fa.phr<br>
+        is_aa_30_nov2016.fa.pin<br>
+        is_aa_30_nov2016.fa.psq<br>
+        <br>
+        The path for these files would be entered as eg<br>
+        C:/autothink/is_aa_30_nov2016.fa<br>
+        "is_aa_30_nov2016.fa" was the name of the nr file fed into the ncbi script for making search databases<br>
+        A copy of these files are included in visualAutothink\visapp_proj\isdatabase<br>
+        <br>
     
         Checkmark the files you want to transfer to "Genomes in database"<br>
         <br><br>

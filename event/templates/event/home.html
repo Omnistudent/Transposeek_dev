@@ -186,9 +186,8 @@
             <tr>
               <th>x</th>
                 <th>Name</th>
-                <th>Is Dir</th>
+                <th>Nickname</th>
                 <th>Genome Directory</th>
-                <th>Contigs</th>
                 <th>Genome Size</th>
                 <th>IS footprint</th>
                 <th>Analyze</th>
@@ -207,9 +206,8 @@
           <tr>
             <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
             <td> {{item.name}}</td>
-            <td> {{item.is_dir}}</td>
-            <td> {{item.path}}</td>
-            <td> {{item.contigs_num}}</td>            
+            <td> Nick</td>
+            <td> {{item.path}}</td>       
             <td> {{item.genome_size}}</td>
             <td> {{item.footprint_size}}</td>
             <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_isok }}" onclick="receiveAnswer2('{{ item.name }}')">Analyse</button></td>
