@@ -54,18 +54,7 @@ finalcsvheaders=["organism","nt covered by is","number of is"]
 
 SEP="\t"
 
-def moveallowed(startx,endx,starty,endy):
-    
-    p1=[int(startx),int(starty)]
-    p2=[int(endx),int(endy)]
-    pdist=math.dist(p1,p2)
-    
-    if pdist<1.5:
-        endsquare = Square.objects.get(x=endx, y=endy)
-        if 'land' in endsquare.image:
-            return False
-        return True
-    return False
+
 
 
 def help(request):
@@ -228,11 +217,6 @@ def home(request):
 
         user.userprofile=user_profile
 
-
- 
-   
-
-
         # Authenticate and log in the user
         user = authenticate(request, username=username10, password=password)
 
@@ -259,11 +243,7 @@ def home(request):
         print(sent_action)
 
 
-       
 
-       
-
-        
 
         if sent_action == 'analyzefile':
             print("sent_command analyzefile")
@@ -278,7 +258,7 @@ def home(request):
             genObj.contigs_num=int(contigs[0])
             genObj.genome_size=int(contigs[1])
             genObj.save()
-            answers = []
+
             dbsquares=getDatabaseAndView()
             
             sent_path=user.userprofile.current_genome_dir
@@ -301,7 +281,6 @@ def home(request):
             genObj.genome_size=contigs[1]
             genObj.save()
 
-            answers = []
             dbsquares=getDatabaseAndView()
             
             sent_path=user.userprofile.current_genome_dir
@@ -319,7 +298,6 @@ def home(request):
             genomeFullPath=genObj.path+"/"+genObj.name
             doblast(genomeFullPath,genObj,sent_answer,user)
 
-            answers = []
             dbsquares=getDatabaseAndView()
           
             sent_path=user.userprofile.current_genome_dir
@@ -335,7 +313,6 @@ def home(request):
             #genomeFullPath=genObj.path+"/"+genObj.name
             analyseblast(genObj,sent_answer,user)
 
-            answers = []
             dbsquares=getDatabaseAndView()
         
             sent_path=user.userprofile.current_genome_dir
@@ -348,10 +325,8 @@ def home(request):
          
             genObj = genomeEntry.objects.filter(name=sent_answer).first()
            
-            #genomeFullPath=genObj.path+"/"+genObj.name
             analyse_footprints(genObj,sent_answer,user)
-
-            answers = []
+ 
             dbsquares=getDatabaseAndView()
      
             sent_path=user.userprofile.current_genome_dir
@@ -365,10 +340,10 @@ def home(request):
          
             genObj = genomeEntry.objects.filter(name=sent_answer).first()
            
-            #genomeFullPath=genObj.path+"/"+genObj.name
+
             analyse_results(genObj,sent_answer,user)
 
-            answers = []
+
             dbsquares=getDatabaseAndView()
         
             sent_path=user.userprofile.current_genome_dir
