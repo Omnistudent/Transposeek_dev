@@ -6,6 +6,8 @@ from .forms import RegisterUserForm
 from event.models import UserProfile
 from event.models import Square
 from event.models import Question
+import os
+from django.conf import settings
 
 
 def login_user(request):
@@ -40,13 +42,33 @@ def register_user(request):
 			login(request, user)		
 			messages.success(request, ("Registration Successful!"))
 
-			question = Question.objects.filter(name='Correct_1').order_by('?').first()
+			#user_profile = UserProfile.objects.create(user=user,name=user,user_type='regular')
 
-			user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question,user_type='regular',mode='move')
+
+			BASE_DIR2 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			dbp1=os.path.join(settings.STATIC_URL, 'isdatabase/is_aa_30_nov2016.fa')
+			blastplacestatic=os.path.join(settings.STATIC_URL, 'blastbin')
+			resultsplacestatic=os.path.join(settings.STATIC_URL, 'results')
+			blast1_resultsplacestatic=os.path.join(settings.STATIC_URL, 'blast1results')
+			blast_analysis_placestatic=os.path.join(settings.STATIC_URL, 'blastanalysis')
+			analysed_gbfiles_placestatic=os.path.join(settings.STATIC_URL, 'analysed_gb_files/')
+			is_list_csv_file_dir_placestatic=os.path.join(settings.STATIC_URL, 'is_list_csv/')
+			is_frequency_pic_placestatic=os.path.join(settings.STATIC_URL, 'event/images/')
+			current_genome_dir_placestatic=os.path.join(settings.STATIC_URL, 'genomes')
+			dbp=BASE_DIR2+dbp1
+			blastplace=BASE_DIR2+blastplacestatic+"/"
+			resultplace=BASE_DIR2+resultsplacestatic
+			blast1_resultplace=BASE_DIR2+blast1_resultsplacestatic
+			blast_analysis_resultplace=BASE_DIR2+blast_analysis_placestatic
+			analysed_gbfiles_place=BASE_DIR2+analysed_gbfiles_placestatic
+			is_list_csv_place=BASE_DIR2+is_list_csv_file_dir_placestatic
+			is_frequency_pic_place=BASE_DIR2+is_frequency_pic_placestatic
+			current_genome_place=BASE_DIR2+current_genome_dir_placestatic
+			
+			user_profile = UserProfile.objects.create(user=user,name=user,user_type='regular',transposase_protein_database=dbp,work_files_dir=resultplace,blast_files_dir=blast1_resultplace,blast_analysis_dir=blast_analysis_resultplace,analysed_gb_files_dir=analysed_gbfiles_place,is_list_csv_file_dir=is_list_csv_place,is_frequency_pic_dir=is_frequency_pic_place,current_genome_dir=current_genome_place,blast_directory=blastplace)
+
 			user.userprofile=user_profile
-			currentsquare=Square.objects.get(x=5, y=5)
-			currentsquare.occupants3.add(user.userprofile)
-			currentsquare.save()
+
 	
 			return redirect('home')
 	else:
