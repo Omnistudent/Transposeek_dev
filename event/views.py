@@ -171,7 +171,7 @@ def home(request):
 
         # Create a new user with the generated username and password
         user = User.objects.create_user(username=username10, password=password)
-        question = Question.objects.filter(name='Correct_1').order_by('?').first()
+
 
    
         BASE_DIR2 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -203,7 +203,7 @@ def home(request):
 
         print(dbp)
         user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,
-                                                  pending_ypos=0,correct_answers=0,wrong_answers=0,question=question,user_type='temp',mode='move',
+                                                  pending_ypos=0,correct_answers=0,wrong_answers=0,user_type='temp',mode='move',
                                                   transposase_protein_database=dbp,
                                                   work_files_dir=resultplace,
                                                   blast_files_dir=blast1_resultplace,
@@ -225,12 +225,7 @@ def home(request):
 
     user=request.user
 
-    currendir_listing=[]
 
-    try:
-        question = user.userprofile.question
-    except:
-        question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
 
     
 
@@ -260,7 +255,7 @@ def home(request):
             dbsquares=getDatabaseAndView()
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
 
 
 
@@ -275,7 +270,7 @@ def home(request):
             dbsquares=getDatabaseAndView()
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
 
 
         if sent_action == 'blast':
@@ -291,7 +286,7 @@ def home(request):
           
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
 
         if sent_action == 'analyseblast':
             print("sent_command analyse blast")
@@ -306,7 +301,7 @@ def home(request):
         
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
       
         if sent_action == 'make_footprint':
             print("sent_command make_footprint")
@@ -320,7 +315,7 @@ def home(request):
      
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
 
 
         if sent_action == 'analyse_results':
@@ -338,7 +333,7 @@ def home(request):
             sent_path=user.userprofile.current_genome_dir
             
             checkButtons()
-            return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+            return render(request,'event/home.html',{'squaredb':dbsquares})
 
 
 
@@ -358,7 +353,7 @@ def home(request):
         dbsquares=getDatabaseAndView()
         
         sent_path=user.userprofile.current_genome_dir
-        return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+        return render(request,'event/home.html',{'squaredb':dbsquares})
     # end of if request was post
 
 
@@ -384,7 +379,7 @@ def home(request):
             sent_path=""
 
         #return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
-        return render(request,'event/home.html',{'squaredb':dbsquares,'currentdir':sent_path,'currentdir_listing':currendir_listing})
+        return render(request,'event/home.html',{'squaredb':dbsquares})
 
 
 def checkButtons():
