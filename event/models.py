@@ -54,7 +54,7 @@ class Footprint(models.Model):
 	sequence=models.CharField('sequence',max_length=5000,default="-1")
 
 	def __str__(self):
-		return "foorprint"
+		return "footprint"
 		
 class genomeEntry(models.Model):
     name=models.CharField('name',max_length=120)

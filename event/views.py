@@ -194,8 +194,7 @@ def home(request):
 
 
         print(dbp)
-        user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,
-                                                  pending_ypos=0,correct_answers=0,wrong_answers=0,user_type='temp',mode='move',
+        user_profile = UserProfile.objects.create(user=user,name=user,user_type='temp',
                                                   transposase_protein_database=dbp,
                                                   work_files_dir=resultplace,
                                                   blast_files_dir=blast1_resultplace,
@@ -388,6 +387,7 @@ def checkButtons():
         if is_valid_blastresults_file(genomme.blast_results_file):
             genomme.button_blastanal_isok="green"
             genomme.save()
+        
         if genomme.footprints.all().exists():
             genomme.button_footprints_isok="green"
             #button_blast_isok
