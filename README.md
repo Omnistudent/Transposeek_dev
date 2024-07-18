@@ -36,8 +36,7 @@ Processes that have been run and have a recognizable result file are colored gre
 Requirements:
 python
 biopython
-matplotlib.pyplot
-PIL
+matplotlib
 
 admin to database is theo/1234
 the adress to administrate the database is http://127.0.0.1:8000/admin/

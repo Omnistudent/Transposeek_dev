@@ -1,32 +1,24 @@
 from msilib import sequence
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-#import calendar
-#from calendar import HTMLCalendar
-#from datetime import datetime
-#from .models import Event
-from .models import Square
-from .models import Beacon
+
+
 from .models import genomeEntry
-#from .models import MyPlayer
+
 from .models import UserProfile
-from .models import Question
+
 from .models import Footprint
 import random
-from random import shuffle
-#from django.http import HttpResponse
-#from django.http import JsonResponse
-#import json
-import math
-from math import exp
+
+
 from django.contrib.auth import authenticate, login
 import string
 #from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Q
+
 from django.conf import settings
-from django.db import models
+
 import os
 from .models import ListItem
 from Bio import SeqIO
@@ -35,11 +27,11 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Blast import NCBIXML
 from Bio.Blast.Applications import NcbiblastxCommandline
 from Bio.SeqFeature import SeqFeature, FeatureLocation
-import csv
+
 import subprocess
 import io
 import matplotlib.pyplot as plt
-from PIL import Image
+
 #from django.http import HttpResponse
 
 
@@ -435,18 +427,25 @@ def create_bar_diagram(data, filename):
     ax.bar(categories, frequencies, color='blue')
     
     # Remove x and y axis labels and title
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_title("")
+    #ax.set_xticks([])
+    #ax.set_yticks([])
+    #ax.set_xlabel("")
+    #ax.set_ylabel("")
+    #ax.set_title("")
     
     # Set the display limits
     ax.axis('off')
     
     # Save the figure to a file
     plt.tight_layout()
-    plt.savefig(filename, dpi=100, bbox_inches='tight', transparent=True)
+    plt.savefig(filename+".png", dpi=100, bbox_inches='tight', transparent=True)
+
+    fig2,ax2=plt.subplots(figsize=(4, 2))  # Set the figure size in inches (width=1.2in, height=0.5in)
+    ax2.bar(categories, frequencies, color='blue')
+        # Save the figure to a file
+    plt.tight_layout()
+    ax2.axis('on')
+    plt.savefig(filename+"_large.png", dpi=500, bbox_inches='tight', transparent=False)
 
 def getGenomeInfo(genomeFullPath):
     #remove_extension(s)
@@ -547,7 +546,7 @@ def analyse_results(genObj,sent_answer,user):
         hit_csv_string+="\n"
 
     pic_dir=user.userprofile.is_frequency_pic_dir
-    pic_file=pic_dir+genomename+".png"
+    pic_file=pic_dir+genomename
 
     blank_file=pic_dir+"blank.png"
     #create_blank_image(120, 50, blank_file)

@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+/static/blast1results/
+
 # C extensions
 *.so
 
