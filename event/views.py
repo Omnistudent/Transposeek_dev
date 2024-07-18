@@ -234,6 +234,11 @@ def home(request):
 
     
 
+
+
+
+    
+
     if request.method == 'POST':
         sent_action = request.POST.get('command')
         sent_answer = request.POST.get('answer')

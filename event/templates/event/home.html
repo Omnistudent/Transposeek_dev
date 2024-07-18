@@ -40,7 +40,7 @@
     }
 
     .container button:hover {
-  background-color: rgb(241, 216, 151); /* set the background color to red when hovering over the button */
+  background-color: rgb(241, 216, 151); /* set the background color when hovering over the button */
   color: black;
   border: 1px solid #000000;
   cursor: pointer; /* change the cursor to a pointer when hovering over the button */
@@ -201,7 +201,7 @@
             <td> {{item.path}}</td>       
             <td> {{item.genome_size}}</td>
             <td> {{item.footprint_size}}</td>
-            <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_isok }}" onclick="receiveAnswer2('{{ item.name }}')">Analyse</button></td>
+            <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_isok }}" onclick="getGenomeSize('{{ item.name }}')">Analyse</button></td>
             
             <td><button class="myButton2" style="border: 2px solid {{ item.button_prepare_isok }}" onclick="prepare('{{ item.name }}')">Prepare</button></td>
             <td><button class="myButton2" style="border: 2px solid {{ item.button_blast_isok }}" onclick="blast('{{ item.name }}')">Blast</button></td>
@@ -258,66 +258,10 @@
         $('#example').DataTable({searching: false, paging: false});
     });
     
-var buttons = document.querySelectorAll('.answer-button');
 
 
 
-// Find the smallest text length
-var smallestLength = Infinity;
-buttons.forEach(function(button) {
-  var textLength = button.textContent.length;
-  if (textLength < smallestLength) {
-    smallestLength = textLength;
-  }
-});
-
-// Set the font size for all buttons based on the smallest text length
-var fontSize = 17; // default font size
-if (smallestLength > 30) {
-  fontSize = 14;
-}
-if (smallestLength > 35) {
-  fontSize = 9;
-}
-buttons.forEach(function(button) {
-  button.style.fontSize = fontSize + 'px';
-});
-
-
-function receiveAnswer(command, answer,unused) {
-  const selectedFilesList = document.getElementById('selectedFiles');
-        const selectedFileNames = [];
-
-        for (let i = 0; i < selectedFilesList.children.length; i++) {
-            const selectedFile = selectedFilesList.children[i].textContent;
-            selectedFileNames.push(selectedFile);
-        }
-
-
-
-  var command_input = document.createElement('input');
-  command_input.type = 'hidden';
-  command_input.name = 'command';
-  command_input.value = 'addgenomes';
-  
-  var answer_input = document.createElement('input');
-  answer_input.type = 'hidden';
-  answer_input.name = 'answer';
-  answer_input.value = selectedFileNames;
-  //alert("Selected value: " + dropdownValue);
-  //console.log('Dropdown value:', document.getElementById('dropdown').value);
-  
-  var form = document.getElementById('question-form');
-  form.appendChild(command_input);
- 
-  form.appendChild(answer_input);
-  form.submit();
-}
-
-
-function receiveAnswer2(genomename) {
-
-
+function getGenomeSize(genomename) {
 
   var command_input = document.createElement('input');
   command_input.type = 'hidden';
@@ -418,132 +362,6 @@ form.appendChild(answer_input);
 form.submit();
 }
 
-
-function thing2(command, answer,unused) {
-  var pathValue = document.getElementById("path-input").value;
-
-  const selectedFilesList = document.getElementById('selectedFiles');
-        const selectedFileNames = [];
-
-        for (let i = 0; i < selectedFilesList.children.length; i++) {
-            const selectedFile = selectedFilesList.children[i].textContent;
-            selectedFileNames.push(selectedFile);
-        }
-
-
-
-  var command_input = document.createElement('input');
-  command_input.type = 'hidden';
-  command_input.name = 'command';
-  command_input.value = 'commitDirectory';
-  
-  var answer_input = document.createElement('input');
-  answer_input.type = 'hidden';
-  answer_input.name = 'answer';
-  answer_input.value = pathValue;
-  //alert("Selected value: " + dropdownValue);
-  //console.log('Dropdown value:', document.getElementById('dropdown').value);
-  
-  var form = document.getElementById('question-form');
-  form.appendChild(command_input);
- 
-  form.appendChild(answer_input);
-  form.submit();
-}
-
-function thing3() {
-  
-
-  const selectedFilesList = getCheckedItems()
-
-
-  var command_input = document.createElement('input');
-  command_input.type = 'hidden';
-  command_input.name = 'command';
-  command_input.value = 'addgenomes';
-  
-  var answer_input = document.createElement('input');
-  answer_input.type = 'hidden';
-  answer_input.name = 'answer';
-  answer_input.value = selectedFilesList;
-
-  answer_input.type = 'hidden';
-  answer_input.name = 'answer';
-  answer_input.value = selectedFilesList;
-  //alert("Selected value: " + dropdownValue);
-  //console.log('Dropdown value:', document.getElementById('dropdown').value);
-  
-  var form = document.getElementById('question-form');
-  form.appendChild(command_input);
- 
-  form.appendChild(answer_input);
-  form.submit();
-}
-
-
-
-
-
-
-
-
-
-function addSelectedFiles() {
-        const selectedFilesList = document.getElementById('selectedFiles');
-        const selectedFileNames = [];
-
-
-        for (let i = 0; i < selectedFilesList.children.length; i++) {
-            const selectedFile = selectedFilesList.children[i].textContent;
-            selectedFileNames.push(selectedFile);
-        }
-
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '{% url "home" %}';
-        form.style.display = 'none';
-
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrfmiddlewaretoken';
-        csrfToken.value = '{{ csrf_token }}';
-
-        form.appendChild(csrfToken);
-
-        for (let i = 0; i < selectedFileNames.length; i++) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'selected_files';
-            input.value = selectedFileNames[i];
-            form.appendChild(input);
-        }
-
-        var command_input = document.createElement('input2');
-        command_input.type = 'hidden';
-        command_input.name = 'command';
-        command_input.value = 'addgenomes';
-        form.appendChild(input2);
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-
-
-    function getCheckedItems() {
-    // Get all the checkboxes from the table
-    var checkboxes = document.querySelectorAll("#itemsTable input[type='checkbox']");
-    
-    var checkedItems = [];
-
-    checkboxes.forEach(function(checkbox) {
-        if (checkbox.checked) {
-            // If the checkbox is checked, push its name or value (depending on your needs) to the array
-            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
-        }
-    });
-
-    return checkedItems;
-}
 
   </script>
 
