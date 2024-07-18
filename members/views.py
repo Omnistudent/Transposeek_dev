@@ -4,8 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterUserForm
 from event.models import UserProfile
-from event.models import Square
-from event.models import Question
 import os
 from django.conf import settings
 
