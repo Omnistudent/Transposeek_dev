@@ -17,20 +17,21 @@
   height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 1; /* Set font-size to 0 to remove white space between elements */
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
   display: grid;
-  grid-template-columns:400px 600px 1fr;
-  grid-template-rows: 50px 600px 100px;
-  gap: 10px;
-  padding: 10px;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
   box-sizing: border-box;
   position: relative;
   outline: none;
+  
 }
 
 .container div {
-  padding: 10px;
-  margin: 0px;
+  padding: 5px;
+  margin: 1px;
   z-index: 1;
 }
 
@@ -64,33 +65,26 @@
   grid-row-end: span 2;
   grid-column-start: 1;
   font-family: "IM Fell DW Pica","EB Garamond", serif;
-  height: 700px;
+
 
   outline: 1px;
   border: 1px solid #000000;
   background-color: rgb(240, 229, 198);
+  font-size: 0.8em;
 }
 
-.content-small {
-  max-width: 500px;
-  height: 600px;
-  font-family: "IM Fell DW Pica","EB Garamond", serif;
-  border: 1px solid #000000;
-  padding: 10px;
-  margin: 0px;
-  z-index: 1;
-  background-color: rgb(240, 229, 198);
-}
 
 .content-question_answer {
   width: 600px;
-  height: 700px;
+
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   border: 1px solid #000000;
   padding: 10px;
   margin: 0px;
   z-index: 1;
   background-color: rgb(240, 229, 198);
+  font-size: 0.8em;
+}
 }
 
 .footer {
@@ -120,6 +114,7 @@
      </div>
      
      <div class="content-large">
+     
     Home tab:<br>
     <br>
     Your investigated genomes are shown here.<br>

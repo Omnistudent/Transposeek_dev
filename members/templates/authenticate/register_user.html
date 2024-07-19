@@ -4,21 +4,55 @@
 {% block content %}
 <style>
 .header {
-  
+	width: 1400px;
 	grid-column-start: 1;
 	grid-column-end: 4;
 	outline: 2px;
 	border: 1px solid #000000;
 	background-color: rgb(240, 229, 198);
   }
-</style>
-{% if form.errors %}
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            There was an error with your form...
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-{% endif %}	
 
+  .container {
+  width: 100vw;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
+  display: grid;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  outline: none;
+  
+}
+
+.container div {
+  padding: 5px;
+  margin: 1px;
+  z-index: 1;
+}
+
+.content-large {
+  grid-row-start: 2;
+  grid-row-end: span 1;
+  grid-column-start: 1;
+  height: 800px;
+  
+  width: 1400px;
+
+  outline: 1px;
+  border: 1px solid #000000;
+  
+  background-color: rgb(240, 229, 198);
+  align-items: center;
+  overflow: auto;
+}
+</style>
+
+<div class="container">
 <div class="header">
 	<a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
 	<a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -28,12 +62,11 @@
 	  <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
 	  <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
 	User: {{user.userprofile}}
+
 	
 
-  
-
-
 </div>
+<div class="content-large">
 	<h1>Register</h1>
 <br/>
 
@@ -43,6 +76,7 @@
 			<input type="submit" value="Submit" class="btn btn-secondary">
 		</form>
 
-<br/><br/>	
-
+<br/><br/>
+</div>	
+</div>
 {% endblock %}

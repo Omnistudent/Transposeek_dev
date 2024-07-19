@@ -4,25 +4,59 @@
 
 {% block content %}
 <style>
-  .header {
-    
-    grid-column-start: 1;
-    grid-column-end: 4;
-    outline: 2px;
-    border: 1px solid #000000;
-    background-color: rgb(240, 229, 198);
-    }
+.header {
+  width: 1400px;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  outline: 2px;
+  border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
+}
+
+    .container {
+  width: 100vw;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
+  display: grid;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  outline: none;
+  
+}
+
+.container div {
+  padding: 5px;
+  margin: 1px;
+  z-index: 1;
+}
+
+.content-large {
+  
+  width: 1400px;
+
+  outline: 1px;
+  border: 1px solid #000000;
+  
+  background-color: rgb(240, 229, 198);
+  align-items: center;
+
+}
   </style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Edit Settings</title>
-    <link rel="stylesheet" href="{% static 'event/css/settings.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 <body>
-
+  <div class="container">
   <div class="header">
     <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
     <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -38,10 +72,8 @@
   
   
   </div>
-    <div class="container">
-        <header class="settings-header">
-            User: {{ user.userprofile }}
-        </header>
+
+  <div class="content-large">
         
         <div class="settings-column">
             {% csrf_token %}
@@ -160,6 +192,7 @@
             <!-- ...additional settings... -->
         </div>
     </div>
+  </div>
     <script>
 
 
