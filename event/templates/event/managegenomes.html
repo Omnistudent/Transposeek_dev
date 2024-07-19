@@ -17,19 +17,37 @@
         grid-gap: 20px;
         background-color: rgb(240, 229, 198);
         padding: 40px;
-
-
-
-
-
     }
 
+    .container {
+  width: 100vw;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
+  display: grid;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  outline: none;
+  
+}
+
+.container div {
+  padding: 5px;
+  margin: 1px;
+  z-index: 1;
+}
     .box2 {
         border: 1px solid black;
         padding: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        font-size: 0.6em;
     }
 
     .footer {
@@ -41,12 +59,13 @@
     }
 
     .header {
-  
-  grid-column-start: 1;
-  grid-column-end: 4;
-  outline: 2px;
-  border: 1px solid #000000;
-  background-color: rgb(240, 229, 198);
+    width: 1400px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    outline: 2px;
+    border: 1px solid #000000;
+    background-color: rgb(240, 229, 198);
+
 }
 
     .buttons {
@@ -57,7 +76,7 @@
 </style>
 </head>
 <body>
-
+    <div class="container">
     <div class="header">
         <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -79,7 +98,6 @@
                       <th>x</th>
                         <th>Name</th>
                         <th>Is Dir</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -89,15 +107,11 @@
                     <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
                     <td> {{item.name}}</td>
                     <td> {{item.is_dir}}</td>
-
-                
                   </tr>
-        
                 {% endfor %}
-                
-                    
                 </tfoot>
             </table>
+
             <div class="buttons">
                 <button type="button" onclick="deleteGenome()">delete from database</button>
             </div>
@@ -112,9 +126,7 @@
             </form>
             <p></p>
 
-            
             <table id="example" class="table table-striped" style="width:100%">
-
                 <thead>
                     <tr>
                       <th></th>
@@ -127,17 +139,12 @@
                   <tr>
                     <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
                     <td> {{item}}</td>
-
-        
                   </tr>
-        
                 {% endfor %}
-                
-                    
                 </tfoot>
             </table>
             
-    </form>
+ 
             <div class="buttons">
                 <button type="button" onclick="addGenomes()">add to database</button>
             </div>
@@ -151,11 +158,8 @@
             </div>
         </div>
     </div>
-    
-    <div class="footer">
-        <p></p> 
-    </div>
-    
+
+</div>
     </body>
 </html>
 
