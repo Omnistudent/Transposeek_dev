@@ -181,6 +181,7 @@
                 <th>Genome Directory</th>
                 <th>Genome Size</th>
                 <th>IS footprint</th>
+                <th>IS % of genome</th>
                 <th>Analyze</th>
                 <th>Prepare</th>
                 <th>Blast</th>
@@ -201,6 +202,7 @@
             <td> {{item.path}}</td>       
             <td> {{item.genome_size}}</td>
             <td> {{item.footprint_size}}</td>
+            <td> {{item.footprint_perc}}</td>
             <td><button class="myButton2" style="border: 2px solid {{ item.button_analyse_isok }}" onclick="getGenomeSize('{{ item.name }}')">Analyse</button></td>
             
             <td><button class="myButton2" style="border: 2px solid {{ item.button_prepare_isok }}" onclick="prepare('{{ item.name }}')">Prepare</button></td>

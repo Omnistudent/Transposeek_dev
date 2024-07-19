@@ -497,19 +497,22 @@ def analyse_results(genObj,sent_answer,user):
         print("more than one record in remove_footprint_from_gb_file, length:",str(len(internalparsed_genbank)))
 
     rec=internalparsed_genbank[0]
-    allfeats=[]
 
-
+    csv_dir=user.userprofile.is_list_csv_file_dir+"/"+genomename+"/"
+    if not os.path.exists(csv_dir):
+        os.makedirs(csv_dir)
 
     hit_csv_string=""
     for header in ishit_headers: 
         hit_csv_string+=header+SEP
 
-    for ik in onerange:
-        hit_csv_string+=str(int(ik)-10)+"tolessthan"+str(ik)+SEP
-
-
+    #for ik in onerange:
+    #    hit_csv_string+=str(int(ik)-10)+"tolessthan"+str(ik)+SEP
+    hit_csv_string+="\n"
+    number_of_hits=0
+    total_is_covered=0
     for feat in rec.features:
+        number_of_hits+=1
 
         perc_of_orf="unknown"
 
@@ -519,6 +522,7 @@ def analyse_results(genObj,sent_answer,user):
         hit_csv_string+=str(feat.location.start)+SEP
         hit_csv_string+=str(feat.location.end)+SEP
         hit_csv_string+=str(1+abs(int(feat.location.start)-int(feat.location.end)))+SEP #length
+        total_is_covered+=1+abs(int(feat.location.start)-int(feat.location.end))
         hit_csv_string+=str(feat.id)+SEP
         for hit_qual in hit_qualifiers:
             if hit_qual in feat.qualifiers.keys():
@@ -536,14 +540,48 @@ def analyse_results(genObj,sent_answer,user):
                     is_fraction_counts[upperlimit]+=1
                     break
 
-        for uppervar in onerange:
-            hit_csv_string+=str(is_fraction_counts[uppervar])+SEP
-            print(uppervar+":"+str(is_fraction_counts[uppervar]))
+
 
         for hit_qual in feat.qualifiers.keys():
             hit_csv_string+=str(hit_qual)+":"+str(feat.qualifiers[hit_qual][0])+SEP
 
         hit_csv_string+="\n"
+
+
+
+    total_csv_string="Genomesize,Contigs,total_is_hits,total_is_coverage,percentage_is_coverage"+SEP
+
+
+    for ik in onerange:
+        total_csv_string+=str(int(ik)-10)+"tolessthan"+str(ik)+SEP
+
+    total_csv_string+="\n"
+
+    total_csv_string+=str(genObj.genome_size)+SEP
+    total_csv_string+=str(genObj.contigs_num)+SEP
+    total_csv_string+=str(number_of_hits)+SEP
+    total_csv_string+=str(total_is_covered)+SEP
+    calc1=float(total_is_covered)/float(genObj.genome_size)
+    total_csv_string+=str(round(calc1,2))+SEP
+
+
+
+    for uppervar in onerange:
+        total_csv_string+=str(is_fraction_counts[uppervar])+SEP
+
+
+
+    csv_summary_dir=user.userprofile.is_list_csv_file_dir+"/"+genomename+"/"
+    csv_summary_file=csv_summary_dir+genomename+"_summary.csv"
+
+    fh_csv_summary=open(csv_summary_file,"w")
+    fh_csv_summary.write(total_csv_string)
+    fh_csv_summary.close()
+
+    genObj.footprint_size=int(total_is_covered)
+    genObj.footprint_perc=round(calc1,2)
+    genObj.save()
+
 
     pic_dir=user.userprofile.is_frequency_pic_dir
     pic_file=pic_dir+genomename
@@ -792,7 +830,8 @@ def analyseblast(genObj,genomename,user):
 
 
 def makeGeneBankFeatures(sortedhits,genomesequence,genomename,user,genob):
-
+    print("hhhhhhhhhhhhhhhhh")
+    print(sortedhits)
     s=Seq(str(genomesequence))
     newrec=SeqRecord(s)
     newrec.id= genomename
@@ -905,6 +944,8 @@ def makeGeneBankFeatures(sortedhits,genomesequence,genomename,user,genob):
     return newrec   
 
 def parse_xml_file(sample,samplename,genObj,user):
+
+    genObj.footprints.clear()
     total_footprint_nucleotides=0
     xmlfh=open(sample,"r")
     try:

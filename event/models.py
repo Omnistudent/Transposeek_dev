@@ -66,6 +66,7 @@ class genomeEntry(models.Model):
     contigs_num=models.IntegerField('contigs_num',default=-1)
     genome_size=models.IntegerField('genome_size',default=-1)
     footprint_size=models.IntegerField('footprint_size',default=-1)
+    footprint_perc=models.FloatField('footprint_size',default=-1.0)
     button_analyse_isok=models.TextField('button_analyse_isok',default="red")
     button_prepare_isok=models.TextField('button_prepare_isok',default="red")
     button_blast_isok=models.TextField('button_blast_isok',default="red")
