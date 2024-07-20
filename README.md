@@ -2,8 +2,15 @@
 
 ## Requirements:
 python 3.10 (may work on other)
+
 biopython
+
 matplotlib
+
+beautifulsoup4
+
+requests
+
 
 ## Installation
 

@@ -46,13 +46,19 @@ class UserProfile(models.Model):
 
 	def __str__(self):
 		return str(self.user)
-	
+
+class NCBIentry(models.Model):
+	name=models.CharField('name',max_length=120)
+	link=models.CharField('link',max_length=120)
+
+	def __str__(self):
+		return self.name
+
 
 class Footprint(models.Model):
 	start=models.IntegerField('start',default=-1)
 	end=models.IntegerField('end',default=-1)
 	sequence=models.CharField('sequence',max_length=5000,default="-1")
-
 	def __str__(self):
 		return "footprint"
 		

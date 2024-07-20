@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import genomeEntry
 
 from .models import UserProfile
-
+from .models import NCBIentry
 from .models import Footprint
 import random
 
@@ -31,6 +31,7 @@ from Bio.SeqFeature import SeqFeature, FeatureLocation
 import subprocess
 import io
 import matplotlib.pyplot as plt
+from bs4 import BeautifulSoup
 
 #from django.http import HttpResponse
 
@@ -55,7 +56,7 @@ def help(request):
 
 def managegenomes(request):
     dbsquares = genomeEntry.objects.all()
-
+    ncbigenomes = NCBIentry.objects.all()
     try:
         currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
     except:
@@ -76,7 +77,7 @@ def managegenomes(request):
                     genObj.delete()
                 
 
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
 
         
         
@@ -111,7 +112,7 @@ def managegenomes(request):
                     genomeP = genomeEntry.objects.create(name=i, path=request.user.userprofile.current_genome_dir, extra='sea3', is_dir=dirinput,blast_results_file=my_blast_files_dir,work_files_dir=my_work_files_dir)
                     
     
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
 
     
         if sent_action == 'commitDirectory':
@@ -125,10 +126,44 @@ def managegenomes(request):
 
 
             currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+        
+        if sent_action == 'dl_genomes':
+            sent_path = request.POST.get('answer')
+            print (sent_path)
+            #htmlfileloc=os.path.join(settings.STATIC_URL, 'Index of_genomes_genbank_bacteria.html')
+            htmlfileloc = 'c:/Users/Eris/Documents/g/transposeek2/static/genomes_genbank_bacteria.html'
+
+        # Read the HTML file
+            """ #NCBIentry.objects.all().delete()
+              ###with open(htmlfileloc, 'r', encoding='utf-8') as file:
+                html_content = file.read()
+                
+
+
+                soup = BeautifulSoup(html_content, 'html.parser')
+
+                 #Find all the <a> tags
+                a_tags = soup.find_all('a')
+
+                # Extract the name and href attributes
+                entries = []
+                for a_tag in a_tags:
+                    name = a_tag.text
+                    link = a_tag['href']
+                    entries.append((name, link))
+
+                # Print the extracted entries
+                for name, link in entries:
+                    #print(name)
+                    entry = NCBIentry.objects.get_or_create(name=name, link=link)###
+
+            """
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
         
     else:
-        return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing})
+        return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
 
             
                
@@ -369,7 +404,6 @@ def home(request):
         except:
             sent_path=""
 
-        #return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'currentdir':sent_path,'currentdir_listing':currendir_listing})
         return render(request,'event/home.html',{'squaredb':dbsquares})
 
 

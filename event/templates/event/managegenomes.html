@@ -10,6 +10,7 @@
 <head>
 
 <title>Manage genomes</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <style>
     .container2 {
         display: grid;
@@ -73,8 +74,11 @@
         gap: 10px;
         margin-top: 20px;
     }
+    
 </style>
+
 </head>
+
 <body>
     <div class="container">
     <div class="header">
@@ -90,7 +94,7 @@
     <div class="container2">
         <div class="box2">
         <p>Genomes in database</p>
-            <table id="example" class="table table-striped" style="width:100%">
+            <table id="itemTable" class="table table-striped" style="width:100%">
 
         
                 <thead>
@@ -151,12 +155,36 @@
         </div>
     
         <div class="box2">
-            <p>Not in use</p>
+          <p>Not in use</p>
+            <table id="genomeList" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                  <th>x</th>
+                  <th>Name</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ncbigenomes %}
+                <tr>
+                  <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
+                    <td>{{ item.name }}</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            
             <div class="buttons">
                 <button>button</button>
+                <button type="button" onclick="dl_genomes()" style="display: inline-block;">do</button>
                 <button>button</button>
             </div>
+
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     </div>
 
 </div>
@@ -165,6 +193,33 @@
 
 
 <script>
+ 
+ $(document).ready(function() {
+            $('#example').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
+
+$(document).ready(function() {
+            $('#itemTable').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
+
+$(document).ready(function() {
+            $('#genomeList').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
 
 function addGenomes() {
   
@@ -207,6 +262,28 @@ function commitDirectory() {
   answer_input.type = 'hidden';
   answer_input.name = 'answer';
   answer_input.value = pathValue;
+
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function dl_genomes() {
+
+  const selectedFilesList = getCheckedItems()
+  var pathValue = document.getElementById("path-input").value;
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'dl_genomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
 
   var form = document.getElementById('question-form');
   form.appendChild(command_input);

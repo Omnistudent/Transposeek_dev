@@ -106,7 +106,9 @@
 }
 
 
-
+list-container .dataTable thead .sorting:after {
+    color: rgb(0, 255, 149); /* Change this to your desired color */
+}
 .content-question_answer {
   width: 100px;
   height: 100px;
@@ -150,6 +152,7 @@
 
 </style>
   </head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
   <body>
     <div class="container">
      <div class="header">
@@ -181,7 +184,7 @@
                 <th>Genome Directory</th>
                 <th>Genome Size</th>
                 <th>IS footprint</th>
-                <th>IS % of genome</th>
+                <th>IS part of genome</th>
                 <th>Analyze</th>
                 <th>Prepare</th>
                 <th>Blast</th>
@@ -257,7 +260,7 @@
 
     // Initialize DataTables
     $(document).ready(function() {
-        $('#example').DataTable({searching: false, paging: false});
+        $('#example').DataTable({searching: true, paging: false});
     });
     
 
