@@ -15,6 +15,12 @@ class ListItem(models.Model):
     is_checked = models.BooleanField(default=False)
     size=models.IntegerField("size",default=-1)
     # Add other fields as needed
+	
+class ListItem2(models.Model):
+    name = models.CharField(max_length=100)
+    is_checked = models.BooleanField(default=False)
+    size=models.IntegerField("size",default=-1)
+    # Add other fields as needed
 
 
 
@@ -42,17 +48,49 @@ class UserProfile(models.Model):
 	is_frequency_pic_dir=models.CharField('is_frequency_pic_dir',max_length=120,default="c:/Users/Eris/Documents/visualAutothink/visapp_proj/static/event/images/")
 
 
-	
+
 
 	def __str__(self):
 		return str(self.user)
-
+      
+class NCBISubentry(models.Model):
+    name = models.CharField('name', max_length=120)
+    link = models.CharField('link', max_length=120)
+    
+    def __str__(self):
+        return self.name
+    
 class NCBIentry(models.Model):
-	name=models.CharField('name',max_length=120)
-	link=models.CharField('link',max_length=120)
+    name = models.CharField('name', max_length=120)
+    link = models.CharField('link', max_length=120,blank=True,default="-1")
+    assembly_accession = models.CharField('assembly_accession', max_length=120,blank=True,default="-1")
+    organism_name = models.CharField('organism_name', max_length=120,blank=True,default="-1")
+    genome_rep = models.CharField('genome_rep', max_length=120,blank=True,default="-1")
+    assembly_level = models.CharField('assembly_level', max_length=120,blank=True,default="-1")    
+    asm_name = models.CharField('asm_name', max_length=120,blank=True,default="-1")
+    gbrs_paired_asm = models.CharField('gbrs_paired_asm', max_length=120,blank=True,default="-1")
+    ftp_path = models.CharField('ftp_path', max_length=120,blank=True,default="-1")
+    assembly_type = models.CharField('assembly_type', max_length=120,blank=True,default="-1")    
+    genome_size = models.CharField('genome_size', max_length=120,blank=True,default="-1")
+    gc_percent = models.CharField('gc_percent', max_length=120,blank=True,default="-1")
+    genome_size_ungapped = models.CharField('genome_size_ungapped', max_length=120,blank=True,default="-1")  
+    replicon_count = models.CharField('replicon_count', max_length=120,blank=True,default="-1")
+    scaffold_count = models.CharField('scaffold_count', max_length=120,blank=True,default="-1")
+    contig_count = models.CharField('contig_count', max_length=120,blank=True,default="-1")
+    has_representative = models.CharField('has_reprsentative', max_length=120,blank=True,default="-1")
+      
+    
+    
+    
+    
+    subentries=models.ManyToManyField(NCBISubentry,blank=True)
 
-	def __str__(self):
-		return self.name
+    def __str__(self):
+        return self.name
+    
+
+
+
 
 
 class Footprint(models.Model):

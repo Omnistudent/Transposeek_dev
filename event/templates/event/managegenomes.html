@@ -161,6 +161,10 @@
                 <tr>
                   <th>x</th>
                   <th>Name</th>
+                  <th>Organism name</th>
+                  <th>Genome size</th>
+                  <th>Has repr. genome</th>
+
 
                 </tr>
             </thead>
@@ -169,6 +173,10 @@
                 <tr>
                   <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
                     <td>{{ item.name }}</td>
+                    <td>{{ item.organism_name }}</td>
+                    <td>{{ item.genome_size}}</td>
+                    <td>{{ item.has_representative}}</td>
+                    
 
                 </tr>
                 {% endfor %}
@@ -176,8 +184,8 @@
         </table>
             
             <div class="buttons">
-                <button>button</button>
-                <button type="button" onclick="dl_genomes()" style="display: inline-block;">do</button>
+                <button type="button" onclick="dl_genomes2()" style="display: inline-block;">Download</button>
+                <button type="button" onclick="dl_genomes()" style="display: inline-block;">Get Info</button>
                 <button>button</button>
             </div>
 
@@ -272,7 +280,7 @@ function commitDirectory() {
 
 function dl_genomes() {
 
-  const selectedFilesList = getCheckedItems()
+  const selectedFilesList = getCheckedItems2()
   var pathValue = document.getElementById("path-input").value;
 
   var command_input = document.createElement('input');
@@ -292,6 +300,27 @@ function dl_genomes() {
   form.submit();
 }
 
+function dl_genomes2() {
+
+const selectedFilesList = getCheckedItems2()
+var pathValue = document.getElementById("path-input").value;
+
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'download_genomes';
+
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = selectedFilesList;
+
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+
+form.appendChild(answer_input);
+form.submit();
+}
 function getCheckedItems() {
     // Get all the checkboxes from the table
     var checkboxes = document.querySelectorAll("#example input[type='checkbox']");
@@ -308,7 +337,21 @@ function getCheckedItems() {
     return checkedItems;
 }
 
+function getCheckedItems2() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#genomeList input[type='checkbox']");
+    
+    var checkedItems = [];
 
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
 
 
 
