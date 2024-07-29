@@ -1,7 +1,5 @@
-from msilib import sequence
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-
 
 from .models import genomeEntry
 
@@ -11,7 +9,7 @@ from .models import NCBISubentry
 from .models import Footprint
 import random
 
-
+import time
 from django.contrib.auth import authenticate, login
 import string
 #from django.contrib.auth.models import AnonymousUser
@@ -61,13 +59,16 @@ def help(request):
 
 def managegenomes(request):
     dbsquares = genomeEntry.objects.all()
-    ncbigenomes = NCBIentry.objects.all()
+    #ncbigenomes = NCBIentry.objects.all()
+    #ncbigenomes = NCBIentry.objects.filter(contig_count="1")
+    #ncbigenomes = NCBIentry.objects.filter(has_representative="YES", contig_count="1")
+    ncbigenomes = NCBIentry.objects.filter(has_representative="YES")
     try:
         currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
     except:
         currendir_listing = []
 
-
+    currendir_listing_filt=filter_filenames(currendir_listing)
     if request.method == 'POST':
         sent_action = request.POST.get('command')
         sent_answer = request.POST.get('answer')
@@ -82,7 +83,7 @@ def managegenomes(request):
                     genObj.delete()
                 
 
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
 
         
         
@@ -117,7 +118,8 @@ def managegenomes(request):
                     genomeP = genomeEntry.objects.create(name=i, path=request.user.userprofile.current_genome_dir, extra='sea3', is_dir=dirinput,blast_results_file=my_blast_files_dir,work_files_dir=my_work_files_dir)
                     
     
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
 
         if sent_action == 'commitDirectory':
             print("sent_command commitdirectory")
@@ -130,10 +132,29 @@ def managegenomes(request):
 
 
             currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
+
         
+        if sent_action == 'updateDB':
+            print("sent_command updateDB")
+            sent_path = request.POST.get('answer')
+            print (sent_path)
+            if os.path.isdir(sent_path):
+                request.user.userprofile.current_genome_dir=sent_path
+                currendir_listing = os.listdir(sent_path)
+                request.user.userprofile.save()
+
+            subentries = NCBISubentry.objects.filter(gc_percent=-1)
+            ncbithing = NCBIentry.objects.filter(name=i).first()
+
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
+
         if sent_action == 'download_genomes':
             print("sent_command download_genomes")
+            download_files_for_gc_minus_one(30)
+            print("_________________________________________")
             sent_path = request.POST.get('answer')
             sent_answer = request.POST.get('answer').split(",")
 
@@ -178,13 +199,22 @@ def managegenomes(request):
                     print("local")
                     print(local_filename)
                     #download_file(url, local_filename)
-
+                    lastfilename=(ncbithing.name.replace("/",""))
+                    print(lastfilename)
+                    print("lastfilename------------------------")
+                    print(tempdirname+lastfilename)
                     download_and_ungzip_file(url, local_filename, local_filename)
                     local_filename2 = tempdirname+l.name.replace("/","")+"_genomic.fna"
-                    numcontigs=concatenate_fasta_sequences(local_filename2, tempdirname+l.name.replace("/","")+"_genomic2.gb", tempdirname+l.name.replace("/","")+"_genomic2.fa")
+                    numcontigs=concatenate_fasta_sequences(local_filename2, tempdirname+lastfilename+".gb", tempdirname+l.name.replace("/","")+"_genomic2.fa")
                     #numcontigs=concatenate_contigs(local_filename, tempdirname+l.name.replace("/","")+"_genomic2.gb", tempdirname+l.name.replace("/","")+"_genomic2.fa")
                     print(numcontigs)
                     print("numcontigs")
+                    print(tempdirname+lastfilename+".gb")
+                    print(request.user.userprofile.current_genome_dir+lastfilename+".gb")
+                    shutil.copy(tempdirname+lastfilename+".gb", request.user.userprofile.current_genome_dir+"/"+lastfilename+".gb")
+                    shutil.rmtree(request.user.userprofile.current_genome_dir+"/temp/")
+                    #copy to request.user.userprofile.current_genome_dir)
+            """
                     print(request.user.userprofile.current_genome_dir)
             """
             print (sent_path)
@@ -233,23 +263,22 @@ def managegenomes(request):
 
                 download_and_ungzip_file(url, local_filename, local_filename+"x")
 
-            """
+
             currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
-        
+            currendir_listing_filt=filter_filenames(currendir_listing)
+            
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
+           
         if sent_action == 'updateDatabase':
-            print("sent_command commitdirectory")
+            print("sent_command updatedatabase")
             sent_path = request.POST.get('answer')
     
-            htmlfileloc = 'c:/Users/Eris/Documents/g/transposeek2/static/genomes_genbank_bacteria.html'
+            htmlfileloc = 'c:/Users/Eris/Documents/g/transposeek2/static/genomes_refseq_bacteria.html'
 
         # Read the HTML file
             NCBIentry.objects.all().delete()
             with open(htmlfileloc, 'r', encoding='utf-8') as file:
                 html_content = file.read()
-                
-
-
                 soup = BeautifulSoup(html_content, 'html.parser')
 
                  #Find all the <a> tags
@@ -264,11 +293,15 @@ def managegenomes(request):
 
                 # Print the extracted entries
                 for name, link in entries:
-                    #print(name)
-                    entry = NCBIentry.objects.get_or_create(name=name, link=link)###"""
+                    print(name)
+
+
+                    entry = NCBIentry.objects.get_or_create(name=name, link=link,database="refseq")
 
             currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+            currendir_listing_filt=filter_filenames(currendir_listing)
+            #return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
     
 
 
@@ -363,10 +396,14 @@ def managegenomes(request):
                     entry = NCBIentry.objects.get_or_create(name=name, link=link)###"""
 
             currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
-            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+            currentdir_listing_filt=filter_filenames(currendir_listing)
+            #return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currentdir_listing_filt,'ncbigenomes':ncbigenomes})
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
     
     else:
-        return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+        currendir_listing_filt=filter_filenames(currendir_listing)
+        #return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currentdir_listing_filt,'ncbigenomes':ncbigenomes})
+        return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing_filt,'ncbigenomes':ncbigenomes,'genomedir':request.user.userprofile.current_genome_dir})
 
             
                
@@ -481,6 +518,11 @@ def home(request):
             genObj.contigs_num=int(contigs[0])
             genObj.genome_size=int(contigs[1])
             genObj.save()
+            contigs=prepareGenomeForBlast(genomeFullPath,genObj,sent_answer,user)
+            genObj.contigs_num=contigs[0]
+            genObj.genome_size=contigs[1]
+            genObj.save()
+
             dbsquares=getDatabaseAndView()
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
@@ -505,14 +547,29 @@ def home(request):
         if sent_action == 'blast':
             print("sent_command blast")
             sent_answer = request.POST.get('answer')
+
+            
+
          
             genObj = genomeEntry.objects.filter(name=sent_answer).first()
            
             genomeFullPath=genObj.path+"/"+genObj.name
+
+
+
+            contigs=prepareGenomeForBlast(genomeFullPath,genObj,sent_answer,user)
+            contigs=getGenomeInfo(genomeFullPath)
+
+            genObj.contigs_num=contigs[0]
+            genObj.genome_size=contigs[1]
+            genObj.save()
+
             doblast(genomeFullPath,genObj,sent_answer,user)
 
             dbsquares=getDatabaseAndView()
-          
+            analyseblast(genObj,sent_answer,user)
+            analyse_footprints(genObj,sent_answer,user)
+            analyse_results(genObj,sent_answer,user)
             sent_path=user.userprofile.current_genome_dir
             checkButtons()
             return render(request,'event/home.html',{'squaredb':dbsquares})
@@ -1401,3 +1458,449 @@ def concatenate_fasta_sequences(fasta_file, output_genbank_file, output_fasta_fi
         SeqIO.write(concatenated_record, fasta_output, "fasta")
 
     return contig_count
+
+def downloadgenomes(request):
+    dbsquares = genomeEntry.objects.all()
+    #ncbigenomes = NCBIentry.objects.all()
+    #ncbigenomes = NCBIentry.objects.exclude(gc_percent="-1")
+    ncbigenomes = NCBIentry.objects.filter(contig_count="1")
+    try:
+        currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+    except:
+        currendir_listing = []
+
+
+    if request.method == 'POST':
+        sent_action = request.POST.get('command')
+        sent_answer = request.POST.get('answer')
+
+        if sent_action == 'deletegenomes':
+            print("sent_command deletegenomes")
+            sent_answer = request.POST.get('answer').split(",")
+            
+            for i in sent_answer:
+                genObj = genomeEntry.objects.filter(name=i).first()
+                if genObj is not None:
+                    genObj.delete()
+                
+
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+
+        
+        
+        if sent_action == 'addgenomes':
+            print("sent_command addgenomes")
+            sent_answer = request.POST.get('answer').split(",")
+            
+            for i in sent_answer:
+                print(i)
+                existing_entry = genomeEntry.objects.filter(name=i).first()
+                
+
+                if not existing_entry:
+
+                    cleanedname=remove_extension(i)
+
+                    if os.path.isdir(request.user.userprofile.current_genome_dir+"/"+i):
+                        dirinput="1"
+                    else:
+                        dirinput="0"
+
+                    my_work_files_dir=request.user.userprofile.work_files_dir+"/"+cleanedname
+                    if not os.path.exists(my_work_files_dir):
+                        os.makedirs(my_work_files_dir)
+                        #print("making dir "+my_work_files_dir)
+
+                    my_blast_files_dir=request.user.userprofile.blast_files_dir+"/"+cleanedname
+                    if not os.path.exists(my_blast_files_dir):
+                        os.makedirs(my_blast_files_dir)
+                        #print("making dir "+my_blast_files_dir)
+
+                    genomeP = genomeEntry.objects.create(name=i, path=request.user.userprofile.current_genome_dir, extra='sea3', is_dir=dirinput,blast_results_file=my_blast_files_dir,work_files_dir=my_work_files_dir)
+                    
+    
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+
+        if sent_action == 'commitDirectory':
+            print("sent_command commitdirectory")
+            sent_path = request.POST.get('answer')
+            print (sent_path)
+            if os.path.isdir(sent_path):
+                request.user.userprofile.current_genome_dir=sent_path
+                currendir_listing = os.listdir(sent_path)
+                request.user.userprofile.save()
+
+
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+        
+        if sent_action == 'download_genomes':
+            print("sent_command download_genomes")
+            sent_path = request.POST.get('answer')
+            sent_answer = request.POST.get('answer').split(",")
+
+            for i in sent_answer:
+                ncbithing = NCBIentry.objects.filter(name=i).first()
+                response = requests.get(ncbithing.link+"/representative")
+                response.raise_for_status() 
+                soup = BeautifulSoup(response.content, 'html.parser')
+                links = soup.find_all('a')
+                directory_listing = []
+                for link in links:
+                    href = link.get('href')
+                    if href and not href.startswith('?'):
+                        directory_listing.append((link.text, href))
+                for d in directory_listing:
+                    listingname=(d[0])
+                    if listingname=="Parent Directory":
+                        continue
+                    if listingname=="HHS Vulnerability Disclosure":
+                        continue
+                    #print(listingname)
+
+                    subentry= NCBISubentry.objects.create(name=d[0], link=d[1])
+                    ncbithing.subentries.add(subentry)
+                    ncbithing.save()
+
+                for l in ncbithing.subentries.all():
+                    print(l.name)  
+                    
+                    url=ncbithing.link+"representative/"+l.link+l.name.replace("/","")+"_genomic.fna.gz"
+                    tempdirname=request.user.userprofile.current_genome_dir+"/temp/"+ncbithing.name+l.name
+                    if not os.path.exists(tempdirname):
+                        os.makedirs(tempdirname)
+                    url=ncbithing.link+"representative/"+l.link+l.name.replace("/","")+"_genomic.fna.gz"
+
+
+
+                # Local filename to save the downloaded file
+                    local_filename = tempdirname+l.name.replace("/","")+"_genomic.fna.gz"
+
+                # Call the function to download the file
+                    print("local")
+                    print(local_filename)
+                    #download_file(url, local_filename)
+                    lastfilename=(ncbithing.name.replace("/",""))
+                    print(lastfilename)
+                    print("lastfilename------------------------")
+                    print(tempdirname+lastfilename)
+                    download_and_ungzip_file(url, local_filename, local_filename)
+                    local_filename2 = tempdirname+l.name.replace("/","")+"_genomic.fna"
+                    numcontigs=concatenate_fasta_sequences(local_filename2, tempdirname+lastfilename+".gb", tempdirname+l.name.replace("/","")+"_genomic2.fa")
+                    #numcontigs=concatenate_contigs(local_filename, tempdirname+l.name.replace("/","")+"_genomic2.gb", tempdirname+l.name.replace("/","")+"_genomic2.fa")
+                    print(numcontigs)
+                    print("numcontigs")
+                    print(tempdirname+lastfilename+".gb")
+                    print(request.user.userprofile.current_genome_dir+lastfilename+".gb")
+                    shutil.copy(tempdirname+lastfilename+".gb", request.user.userprofile.current_genome_dir+"/"+lastfilename+".gb")
+                    #copy to request.user.userprofile.current_genome_dir)
+            """
+                    print(request.user.userprofile.current_genome_dir)
+            """
+            print (sent_path)
+            if os.path.isdir(sent_path):
+                request.user.userprofile.current_genome_dir=sent_path
+                currendir_listing = os.listdir(sent_path)
+                request.user.userprofile.save()
+
+            response = requests.get(ncbithing.link+"/representative")
+            response.raise_for_status() 
+            soup = BeautifulSoup(response.content, 'html.parser')
+            links = soup.find_all('a')
+            directory_listing = []
+            for link in links:
+                href = link.get('href')
+                if href and not href.startswith('?'):
+                    directory_listing.append((link.text, href))
+            for d in directory_listing:
+                listingname=(d[0])
+                if listingname=="Parent Directory":
+                    continue
+                if listingname=="HHS Vulnerability Disclosure":
+                    continue
+                #print(listingname)
+
+                subentry= NCBISubentry.objects.create(name=d[0], link=d[1])
+                ncbithing.subentries.add(subentry)
+                ncbithing.save()
+            for l in ncbithing.subentries.all():
+                print(l.name)  
+                url=ncbithing.link+"latest_assembly_versions/"+l.link+l.name.replace("/","")+"_genomic.fna.gz"
+
+                print("fffffffffffffff")
+                tempdirname=request.user.userprofile.current_genome_dir+"/temp/"+ncbithing.name+l.name
+                if not os.path.exists(tempdirname):
+                    os.makedirs(tempdirname)
+
+
+                # Local filename to save the downloaded file
+                local_filename = tempdirname+l.name.replace("/","")+"_genomic.fna.gz"
+
+                # Call the function to download the file
+                print("local")
+                print(local_filename)
+                download_file(url, local_filename)
+
+                download_and_ungzip_file(url, local_filename, local_filename+"x")
+
+            """
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+        
+        if sent_action == 'updateDatabase':
+            print("sent_command commitdirectory")
+            sent_path = request.POST.get('answer')
+    
+            htmlfileloc = 'c:/Users/Eris/Documents/g/transposeek2/static/genomes_genbank_bacteria.html'
+
+        # Read the HTML file
+            NCBIentry.objects.all().delete()
+            with open(htmlfileloc, 'r', encoding='utf-8') as file:
+                html_content = file.read()
+                
+
+
+                soup = BeautifulSoup(html_content, 'html.parser')
+
+                 #Find all the <a> tags
+                a_tags = soup.find_all('a')
+
+                # Extract the name and href attributes
+                entries = []
+                for a_tag in a_tags:
+                    name = a_tag.text
+                    link = a_tag['href']
+                    entries.append((name, link))
+
+                # Print the extracted entries
+                for name, link in entries:
+                    #print(name)
+                    entry = NCBIentry.objects.get_or_create(name=name, link=link)###"""
+
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+    
+
+
+            #currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            #return render(request,'event/managegenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+        if sent_action == 'dl_genomes':
+            sent_answer = request.POST.get('answer').split(",")
+            print (sent_answer)
+            print ("sent_answer")
+            for i in sent_answer:
+                print(i)
+                sent_path = request.POST.get('answer')
+                print("dlgenomes")
+                print (sent_path)
+             
+                ncbithing = NCBIentry.objects.filter(name=i).first()
+                print(ncbithing.name)
+                print("-------------------------")
+                ncbithing.subentries.all().delete()
+                ncbithing.save()
+                print(ncbithing.link)
+
+                info=str(download_file_as_bytes(ncbithing.link+"/assembly_summary.txt"))
+                headlines=info.split("\n")[1]
+                headlines2=headlines.split("\t")
+                info=info.split("\n")[2]
+                info2=info.split("\t")
+
+                dictionary = {key: value for key, value in zip_longest(headlines2, info2, fillvalue=None)}
+                print(dictionary)
+
+
+                ncbithing.assembly_accession=dictionary['#assembly_accession']
+                ncbithing.organism_name=dictionary['organism_name']
+                ncbithing.genome_rep=dictionary['genome_rep']
+                ncbithing.assembly_level=dictionary['assembly_level']
+                ncbithing.asm_name=dictionary['asm_name']
+                ncbithing.gbrs_paired_asm=dictionary['gbrs_paired_asm']
+                ncbithing.ftp_path=dictionary['ftp_path']
+                ncbithing.assembly_type=dictionary['assembly_type']
+                ncbithing.genome_size=dictionary['genome_size']
+                ncbithing.gc_percent=dictionary['gc_percent']
+                ncbithing.genome_size_ungapped=dictionary['genome_size_ungapped']
+                ncbithing.replicon_count=dictionary['replicon_count']
+                ncbithing.scaffold_count=dictionary['scaffold_count']
+                ncbithing.contig_count=dictionary['contig_count']
+                ncbithing.seq_rel_date=dictionary['seq_rel_date']
+
+                ncbithing.save()
+                
+                has_representative=check_directory_exists(ncbithing.link, 'representative/')
+                if (has_representative):
+                    ncbithing.has_representative="YES"
+                else:
+                    ncbithing.has_representative="NO"
+
+                ncbithing.save()
+
+                #for genome in sent_path:
+                    #response = requests.get(genome)
+                #    print (genome)
+                #    ncbithing = NCBIentry.objects.filter(name=genome).first()  
+                    #response.raise_for_status() 
+                    #soup = BeautifulSoup(response.content, 'html.parser')
+                    #links = soup.find_all('a')
+
+                """
+            #htmlfileloc=os.path.join(settings.STATIC_URL, 'Index of_genomes_genbank_bacteria.html')
+            htmlfileloc = 'c:/Users/Eris/Documents/g/transposeek2/static/genomes_genbank_bacteria.html'
+
+        # Read the HTML file
+            NCBIentry.objects.all().delete()
+            with open(htmlfileloc, 'r', encoding='utf-8') as file:
+                html_content = file.read()
+                
+
+
+                soup = BeautifulSoup(html_content, 'html.parser')
+
+                 #Find all the <a> tags
+                a_tags = soup.find_all('a')
+
+                # Extract the name and href attributes
+                entries = []
+                for a_tag in a_tags:
+                    name = a_tag.text
+                    link = a_tag['href']
+                    entries.append((name, link))
+
+                # Print the extracted entries
+                for name, link in entries:
+                    #print(name)
+                    entry = NCBIentry.objects.get_or_create(name=name, link=link)###"""
+
+            currendir_listing = os.listdir(request.user.userprofile.current_genome_dir)
+            return render(request,'event/downloadgenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+    
+    else:
+        
+        return render(request,'event/downloadgenomes.html',{'squaredb':dbsquares,'currentdir_listing':currendir_listing,'ncbigenomes':ncbigenomes})
+
+
+
+#{'#assembly_accession': 'GCF_027716165.1', 'bioproject': 'PRJNA224116', 'biosample': 'SAMN32411437', 'wgs_master': 'JAQFUK000000000.1', 'refseq_category': 'na', 'taxid': '3018118', 'species_taxid': '3018118', 'organism_name': 'Bacillus cereus group sp. Bc032', 'infraspecific_name': 'strain=Bc032', 'isolate': 'na', 'version_status': 'latest', 'assembly_level': 'Contig', 'release_type': 'Major', 'genome_rep': 'Full', 'seq_rel_date': '2023/01/10', 'asm_name': 'ASM2771616v1', 'asm_submitter': 'City University of Hong Kong Shenzhen Research Institute', 'gbrs_paired_asm': 'GCA_027716165.1', 'paired_asm_comp': 'identical', 'ftp_path': 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/027/716/165/GCF_027716165.1_ASM2771616v1', 'excluded_from_refseq': 'na', 'relation_to_type_material': 'na', 'asm_not_live_date': 'na', 'assembly_type': 'haploid', 'group': 'bacteria', 'genome_size': '5581965', 'genome_size_ungapped': '5581965', 'gc_percent': '35.000000', 'replicon_count': '0', 'scaffold_count': '249', 'contig_count': '249', 'annotation_provider': 'NCBI RefSeq', 'annotation_name': 'NCBI Prokaryotic Genome Annotation Pipeline (PGAP)', 'annotation_date': '2024/02/23', 'total_gene_count': '5837', 'protein_coding_gene_count': '5431', 'non_coding_gene_count': '63', 'pubmed_id': 'na'}
+
+
+def filter_filenames(filenames):
+    # Retrieve all existing geneitem names from the database
+    existing_names = genomeEntry.objects.values_list('name', flat=True)
+    # Filter the filenames to exclude those present in the database
+    #filtered_filenames = [filename for filename in filenames if filename not in existing_names]
+    filtered_filenames = [filename for filename in filenames if filename not in existing_names and filename != "temp"]
+    
+    return filtered_filenames
+
+def download_files_for_gc_minus_one(duration_minutes=5):
+    start_time = time.time()
+    count=0
+    max_duration = duration_minutes * 60  # Convert minutes to seconds
+            #subentries = NCBISubentry.objects.filter(gc_percent=-1)
+    subentries = NCBIentry.objects.filter(gc_percent="-1")
+    #subentries = NCBIentry.objects.all()
+    # Get all NCBISubentry instances with gc_percent == -1
+    #subentries = NCBISubentry.objects.filter(gc_percent=-1)
+
+    for subentry in subentries:
+        # Check if the maximum duration has been reached
+        if time.time() - start_time > max_duration:
+            print("Time limit reached. Stopping the download process.")
+            break
+
+        try:
+
+            info=str(download_file_as_bytes(subentry.link+"/assembly_summary.txt"))
+            headlines=info.split("\n")[1]
+            headlines2=headlines.split("\t")
+            info=info.split("\n")[2]
+            info2=info.split("\t")
+
+            dictionary = {key: value for key, value in zip_longest(headlines2, info2, fillvalue=None)}
+            #print(dictionary)
+            count+=1
+
+            subentry.assembly_accession=dictionary['#assembly_accession']
+            subentry.organism_name=dictionary['organism_name']
+            subentry.genome_rep=dictionary['genome_rep']
+            subentry.assembly_level=dictionary['assembly_level']
+            subentry.asm_name=dictionary['asm_name']
+            subentry.gbrs_paired_asm=dictionary['gbrs_paired_asm']
+            subentry.ftp_path=dictionary['ftp_path']
+            subentry.assembly_type=dictionary['assembly_type']
+            subentry.genome_size=dictionary['genome_size']
+            subentry.gc_percent=dictionary['gc_percent']
+            subentry.genome_size_ungapped=dictionary['genome_size_ungapped']
+            subentry.replicon_count=dictionary['replicon_count']
+            subentry.scaffold_count=dictionary['scaffold_count']
+            subentry.contig_count=dictionary['contig_count']
+            subentry.seq_rel_date=dictionary['seq_rel_date']
+            subentry.refseq_category=dictionary['refseq_category']
+            subentry.taxid=dictionary['taxid']
+            subentry.species_taxid=dictionary['species_taxid']
+            subentry.infraspecific_name=dictionary['infraspecific_name']
+            subentry.isolate=dictionary['isolate']
+            subentry.version_status=dictionary['version_status']
+            subentry.release_type=dictionary['release_type']
+            subentry.asm_submitter=dictionary['asm_submitter']
+            subentry.gbrs_paired_asm=dictionary['gbrs_paired_asm']
+            subentry.paired_asm_comp=dictionary['paired_asm_comp']
+            subentry.excluded_from_refseq=dictionary['excluded_from_refseq']
+            subentry.relation_to_type_material=dictionary['relation_to_type_material']
+            subentry.group=dictionary['group']
+            subentry.asm_not_live_date=dictionary['asm_not_live_date']
+            subentry.relation_to_type_material=dictionary['relation_to_type_material']
+            subentry.genome_size_ungapped=dictionary['genome_size_ungapped']
+            subentry.annotation_provider=dictionary['annotation_provider']
+            subentry.annotation_name=dictionary['annotation_name']
+            subentry.annotation_date=dictionary['annotation_date']
+            subentry.total_gene_count=dictionary['total_gene_count']
+            subentry.protein_coding_gene_count=dictionary['protein_coding_gene_count']
+            subentry.non_coding_gene_count=dictionary['non_coding_gene_count']
+            subentry.pubmed_id=dictionary['pubmed_id']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            subentry.save()
+            
+            has_representative=check_directory_exists(subentry.link, 'representative/')
+            if (has_representative):
+                subentry.has_representative="YES"
+            else:
+                subentry.has_representative="NO"
+
+            subentry.save()
+            #response = requests.get(subentry.link, stream=True)
+            #response.raise_for_status()  # Ensure the request was successful
+
+            # Extract filename from URL
+            #filename = subentry.link.split('/')[-1]
+
+            # Save the file
+            #with open(filename, 'wb') as file:
+             #   for chunk in response.iter_content(chunk_size=8192):
+            #        file.write(chunk)
+            
+            print(f"Successfully downloaded from {subentry.link}")
+
+        except requests.RequestException as e:
+            print(f"Failed to download {subentry.link}: {e}")
+    print(count)
+               

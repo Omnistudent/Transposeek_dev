@@ -1,0 +1,350 @@
+ {% extends 'event/base.html' %}
+{% load static %}
+
+{%block content%}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<title>Manage genomes</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<style>
+    .container2 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 20px;
+        background-color: rgb(240, 229, 198);
+        padding: 40px;
+    }
+
+    .container {
+  width: 100vw;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 2; /* Set font-size to 0 to remove white space between elements */
+  display: grid;
+  grid-template-columns:700px 1fr 50 px;
+  grid-template-rows: 50px 1fr 1fr 50px;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  outline: none;
+  
+}
+
+.container div {
+  padding: 5px;
+  margin: 1px;
+  z-index: 1;
+}
+    .box2 {
+        border: 1px solid black;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.6em;
+    }
+
+    .footer {
+        text-align: center;
+        border: 1px solid black;
+        padding: 20px;
+        margin: 20px;
+        background-color: rgb(240, 229, 198);
+    }
+
+    .header {
+    width: 1400px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    outline: 2px;
+    border: 1px solid #000000;
+    background-color: rgb(240, 229, 198);
+
+}
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+</style>
+
+</head>
+
+<body>
+    <div class="container">
+    <div class="header">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="nav-link" href="{% url 'help' %}">Help</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+    
+    <div class="container2">
+        
+    
+        <div class="box2">
+          <p>Not in use</p>
+            <table id="genomeList" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                  <th>x</th>
+         
+                  <th>Organism name</th>
+                  <th>Genome size</th>
+                  <th>Has repr. genome</th>
+                  <th>replicon_count</th>
+                  <th>scaffold_count</th>
+                  <th>contig_count</th>
+                  <th>ftp_path</th>
+                  
+ 
+          
+
+
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ncbigenomes %}
+                <tr>
+                  <td><input type="checkbox" name="{{ item }}" {% if item.is_checked %}checked{% endif %}></td>
+     
+                    <td>{{ item.organism_name }}</td>
+                    <td>{{ item.genome_size}}</td>
+                    <td>{{ item.has_representative}}</td>
+                    <td>{{ item.replicon_count }}</td>
+                    <td>{{ item.scaffold_count}}</td>
+                    <td>{{ item.contig_count}}</td>
+                    <td>{{ item.ftp_path}}</td>
+              
+
+
+
+
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            
+            <div class="buttons">
+                <button type="button" onclick="dl_genomes2()" style="display: inline-block;">Download</button>
+                <button type="button" onclick="dl_genomes()" style="display: inline-block;">Get Info</button>
+                <button>button</button>
+            </div>
+
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    </div>
+
+</div>
+    </body>
+</html>
+
+
+<script>
+ 
+ $(document).ready(function() {
+            $('#example').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
+
+$(document).ready(function() {
+            $('#itemTable').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
+
+$(document).ready(function() {
+            $('#genomeList').DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Enable info display
+                "searching": true // Enable search box
+            });
+        });
+
+function addGenomes() {
+  
+
+  const selectedFilesList = getCheckedItems()
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'addgenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function commitDirectory() {
+  var pathValue = document.getElementById("path-input").value;
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'commitDirectory';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = pathValue;
+
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function dl_genomes() {
+
+  const selectedFilesList = getCheckedItems2()
+  var pathValue = document.getElementById("path-input").value;
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'dl_genomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+function dl_genomes2() {
+
+const selectedFilesList = getCheckedItems2()
+var pathValue = document.getElementById("path-input").value;
+
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'download_genomes';
+
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = selectedFilesList;
+
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+
+form.appendChild(answer_input);
+form.submit();
+}
+function getCheckedItems() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#example input[type='checkbox']");
+    
+    var checkedItems = [];
+
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
+
+function getCheckedItems2() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#genomeList input[type='checkbox']");
+    
+    var checkedItems = [];
+
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
+
+
+
+function deleteGenome() {
+  
+
+  const selectedFilesList = getCheckedItems()
+
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'deletegenomes';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = selectedFilesList;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+ 
+  form.appendChild(answer_input);
+  form.submit();
+}
+
+
+  </script>
+
+
+{%endblock%}

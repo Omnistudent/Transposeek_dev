@@ -6,6 +6,7 @@ urlpatterns = [
     #path('events',views.all_events,name="list-events"),
     path('help',views.help,name="help"),
     path('managegenomes',views.managegenomes,name="managegenomes"),
+    path('downloadgenomes',views.downloadgenomes,name="downloadgenomes"),
     path('editSettings',views.editSettings,name="editSettings"),
     #path('grid',views.grid,name="grid"),
     path('delete_inactive_temp_users',views.delete_inactive_temp_users,name="delete_inactive_temp_users"),
