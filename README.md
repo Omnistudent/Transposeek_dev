@@ -20,8 +20,16 @@ https://github.com/git-guides/install-git
 
 Using a command line window, go to an empty folder and type
 ```
+pip install django BioPython matplotlib bs4 requests
+```
+
+and then
+```
 git clone https://github.com/Omnistudent/transposeek2
 ```
+
+pip install django BioPython matplotlib bs4 requests
+
 
 ## Running the program
 
