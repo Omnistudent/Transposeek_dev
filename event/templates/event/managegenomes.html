@@ -159,7 +159,7 @@
         </div>
     
         <div class="box2">
-          <p>Refseq genomes at NCBI</p>
+          <p>Refseq genomes at NCBI (refseq,has representative genome), not in genome directory</p>
             <table id="genomeList" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
@@ -195,7 +195,9 @@
             
             <div class="buttons">
                 <button type="button" onclick="dl_genomes2()" style="display: inline-block;">Download</button>
-                <button type="button" onclick="dl_genomes()" style="display: inline-block;">Get Info</button>
+                <button type="button" onclick="updateDatabase()" style="display: inline-block;">Update database names</button>
+                <button type="button" onclick="updateDatabaseInfo()" style="display: inline-block;">Update database info</button>
+                <button type="button" onclick="dl_and_treat()" style="display: inline-block;">Download and analyse</button>
                 <button>button</button>
             </div>
 
@@ -288,7 +290,7 @@ function commitDirectory() {
   form.submit();
 }
 
-function dl_genomes() {
+function updateDatabase() {
 
   const selectedFilesList = getCheckedItems2()
   var pathValue = document.getElementById("path-input").value;
@@ -308,6 +310,28 @@ function dl_genomes() {
  
   form.appendChild(answer_input);
   form.submit();
+}
+
+function updateDatabaseInfo() {
+
+const selectedFilesList = getCheckedItems2()
+var pathValue = document.getElementById("path-input").value;
+
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'updateDatabaseInfo';
+
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = selectedFilesList;
+
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+
+form.appendChild(answer_input);
+form.submit();
 }
 
 function dl_genomes2() {
@@ -331,6 +355,33 @@ form.appendChild(command_input);
 form.appendChild(answer_input);
 form.submit();
 }
+
+function dl_and_treat() {
+
+const selectedFilesList = getCheckedItems2()
+var pathValue = document.getElementById("path-input").value;
+
+var command_input = document.createElement('input');
+command_input.type = 'hidden';
+command_input.name = 'command';
+command_input.value = 'dl_and_treat';
+
+var answer_input = document.createElement('input');
+answer_input.type = 'hidden';
+answer_input.name = 'answer';
+answer_input.value = selectedFilesList;
+
+var form = document.getElementById('question-form');
+form.appendChild(command_input);
+
+form.appendChild(answer_input);
+form.submit();
+}
+
+
+
+
+
 function getCheckedItems() {
     // Get all the checkboxes from the table
     var checkboxes = document.querySelectorAll("#example input[type='checkbox']");
@@ -364,11 +415,26 @@ function getCheckedItems2() {
 }
 
 
+function getCheckedItems3() {
+    // Get all the checkboxes from the table
+    var checkboxes = document.querySelectorAll("#itemTable input[type='checkbox']");
+    
+    var checkedItems = [];
+
+    checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            // If the checkbox is checked, push its name or value (depending on your needs) to the array
+            checkedItems.push(checkbox.name); // or checkbox.value if you want the value instead
+        }
+    });
+
+    return checkedItems;
+}
 
 function deleteGenome() {
   
 
-  const selectedFilesList = getCheckedItems()
+  const selectedFilesList = getCheckedItems3()
 
 
   var command_input = document.createElement('input');
@@ -384,7 +450,7 @@ function deleteGenome() {
   answer_input.type = 'hidden';
   answer_input.name = 'answer';
   answer_input.value = selectedFilesList;
-  //alert("Selected value: " + dropdownValue);
+  //alert("Selected value: " + str(selectedFilesList));
   //console.log('Dropdown value:', document.getElementById('dropdown').value);
   
   var form = document.getElementById('question-form');

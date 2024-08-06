@@ -42,7 +42,7 @@ class UserProfile(models.Model):
 
 	blast_files_dir=models.CharField('blast_files_dir',max_length=120,default="D:/blastresults/")
 	blast_analysis_dir=models.CharField('blast_analysis_dir',max_length=120,default="D:/blastanalysis/")
-	analysed_gb_files_dir=models.CharField('analysed_gb_files',max_length=120,default="D:/analysed_gb_files/")
+	final_results_dir=models.CharField('analysed_gb_files',max_length=120,default="D:/final_results/")
 	work_files_dir=models.CharField('work_files_dir',max_length=120,default="D:/workfiles/")
 	is_list_csv_file_dir=models.CharField('is_list_csv_file_dir',max_length=120,default="D:/is_csvs/")
 	is_frequency_pic_dir=models.CharField('is_frequency_pic_dir',max_length=120,default="c:/Users/Eris/Documents/visualAutothink/visapp_proj/static/event/images/")
@@ -83,39 +83,28 @@ class NCBIentry(models.Model):
     bioproject=models.CharField('bioproject',max_length=120, default="-1")
     biosample=models.CharField('biosample',max_length=120, default="-1")
     wgs_master=models.CharField('wgs_master',max_length=120, default="-1")
-
-    refseq_category=models.CharField('refseq_category',max_length=120, default="-1")
     taxid=models.CharField('taxid',max_length=120, default="-1")
     species_taxid=models.CharField('species_taxid',max_length=120, default="-1")
-
     refseq_category=models.CharField('refseq_category',max_length=120, default="-1")
     taxid=models.CharField('taxid',max_length=120, default="-1")
-    species_taxid=models.CharField('species_taxid',max_length=120, default="-1")
-
     infraspecific_name=models.CharField('infraspecific_name',max_length=120, default="-1")
     isolate=models.CharField('isolate',max_length=120, default="-1")
     version_status=models.CharField('version_status',max_length=120, default="-1")
-
     release_type=models.CharField('release_type',max_length=120, default="-1")
     asm_submitter=models.CharField('asm_submitter',max_length=120, default="-1")
     gbrs_paired_asm=models.CharField('gbrs_paired_asm',max_length=120, default="-1")
-
     paired_asm_comp=models.CharField('paired_asm_comp',max_length=120, default="-1")
     excluded_from_refseq=models.CharField('excluded_from_refseq',max_length=120, default="-1")
     relation_to_type_material=models.CharField('relation_to_type_material',max_length=120, default="-1")
-
     group=models.CharField('group',max_length=120, default="-1")
     asm_not_live_date=models.CharField('asm_not_live_date',max_length=120, default="-1")
     relation_to_type_material=models.CharField('relation_to_type_material',max_length=120, default="-1")
-
     genome_size_ungapped=models.CharField('genome_size_ungapped',max_length=120, default="-1")
     annotation_provider=models.CharField('annotation_provider',max_length=120, default="-1")
     annotation_name=models.CharField('annotation_name',max_length=120, default="-1")
-
     annotation_date=models.CharField('annotation_date',max_length=120, default="-1")
     total_gene_count=models.CharField('total_gene_count',max_length=120, default="-1")
     protein_coding_gene_count=models.CharField('protein_coding_gene_count',max_length=120, default="-1")
-
     non_coding_gene_count=models.CharField('non_coding_gene_count',max_length=120, default="-1")
     pubmed_id=models.CharField('pubmed_id',max_length=120, default="-1")
 
