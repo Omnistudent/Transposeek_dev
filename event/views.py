@@ -358,7 +358,7 @@ def home(request):
         resultsplacestatic=os.path.join(settings.STATIC_URL, 'results')
         
         blast1_resultsplacestatic=os.path.join(settings.STATIC_URL, 'blast1results')
-        blast_analysis_placestatic=os.path.join(settings.STATIC_URL, 'blastanalysis')
+        blast_analysis_placestatic=os.path.join(settings.STATIC_URL, 'blastanalysis/')
         analysed_gbfiles_placestatic=os.path.join(settings.STATIC_URL, 'final_results/')
         is_list_csv_file_dir_placestatic=os.path.join(settings.STATIC_URL, 'is_list_csv/')
         is_frequency_pic_placestatic=os.path.join(settings.STATIC_URL, 'event/images/')
@@ -458,7 +458,7 @@ def home(request):
             genObj = genomeEntry.objects.filter(name=sent_answer).first()
            
             genomeFullPath=genObj.path+"/"+genObj.name
-            print(genomeFullPath)
+
 
 
             contigs=prepareGenomeForBlast(genomeFullPath,genObj,sent_answer,user)
@@ -533,10 +533,6 @@ def home(request):
         for file_name in file_list:
             item = ListItem(name=file_name)
             items.append(item)
-            print(file_name)
-
-
-
 
 
 
@@ -690,8 +686,6 @@ def getGenomeInfo(genomeFullPath):
 
 
 def filter_genomes_view(dld_genomes):
-    # Example list of filenames
-    currentdir_listing = ['name1.gb', 'name2.gb', 'name3.gb']  # Replace with your actual list of filenames
     
     # Normalize filenames
     normalized_files = [normalize_name(filename) for filename in dld_genomes]
