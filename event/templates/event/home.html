@@ -107,8 +107,8 @@
 
 
 .content-question_answer {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   border: 1px solid #000000;
   padding: 5px;
@@ -153,9 +153,9 @@
   <body>
     <div class="container">
      <div class="header">
-          <a class="nav-link" href="{% url 'home' %}">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;
-          <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="nav-link" href="{% url 'home' %}">Search</a>&nbsp;&nbsp;&nbsp;&nbsp;
           <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>&nbsp;&nbsp;&nbsp;&nbsp; 
+          <a class="nav-link" href="{% url 'login' %}">Log in</a>&nbsp;&nbsp;&nbsp;&nbsp;
             <a class="nav-link" href="{% url 'register_user' %}">Register</a>&nbsp;&nbsp;&nbsp;&nbsp; 
             <a class="nav-link" href="{% url 'logout' %}">Log out</a>&nbsp;&nbsp;&nbsp;&nbsp; 
             <a class="nav-link" href="{% url 'editSettings' %}"> Edit Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -230,7 +230,7 @@
 
 
     <div class="content-question_answer">
-    
+    If this list is empty, you need to add genomes in <a class="nav-link" href="{% url 'managegenomes' %}">Manage genomes</a>.
   <form method="post" id="question-form" action="">
     {% csrf_token %}
 
