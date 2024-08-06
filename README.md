@@ -28,7 +28,6 @@ and then
 git clone https://github.com/Omnistudent/transposeek2
 ```
 
-pip install django BioPython matplotlib bs4 requests
 
 
 ## Running the program
